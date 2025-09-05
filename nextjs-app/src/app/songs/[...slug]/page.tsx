@@ -13,6 +13,8 @@ interface SongInfo {
 interface SongData {
   title: string;
   lyrics: Array<{ verse: number | string; text: string; }>;
+  // Adding a flexible index signature to handle different possible structures
+  [key: string]: any;
 }
 
 async function getAllSongs(): Promise<SongInfo[]> {
@@ -52,13 +54,14 @@ export default async function SongPage({ params }: { params: { slug: string[] } 
   const [type, fileName] = params.slug;
   if (!type || !fileName) notFound();
 
-  // Fetch current song and all songs in parallel
   const [song, allSongs] = await Promise.all([
     getSongContent(type, fileName),
     getAllSongs(),
   ]);
 
-  // Determine previous and next songs
+  // DEBUGGING: Log the received song structure to the server terminal
+  console.log('Song data received:', JSON.stringify(song, null, 2));
+
   const bookSongs = allSongs
     .filter(s => s.type === type)
     .sort((a, b) => parseInt(a.name) - parseInt(b.name));
@@ -68,12 +71,14 @@ export default async function SongPage({ params }: { params: { slug: string[] } 
   const nextSong = currentIndex < bookSongs.length - 1 ? bookSongs[currentIndex + 1] : null;
 
   const songNumber = fileName.replace('.json', '');
+  
+  // Defensive check for lyrics property
+  const lyrics = song.lyrics || song.verses || song.lirik || [];
 
   return (
     <main className="bg-white min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         
-        {/* Header and Navigation */}
         <nav className="flex justify-between items-center mb-6 text-sm">
           <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
             &larr; Daftar Lagu
@@ -92,23 +97,25 @@ export default async function SongPage({ params }: { params: { slug: string[] } 
           </div>
         </nav>
 
-        {/* Song Title */}
         <header className="text-center border-b pb-6 mb-8">
           <p className="text-lg font-semibold text-gray-500">{type.toUpperCase()} {songNumber}</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-1">{song.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-1">{song.title || 'Judul tidak ditemukan'}</h1>
         </header>
 
-        {/* Lyrics */}
         <div className="max-w-2xl mx-auto">
           <div className="space-y-8">
-            {song.lyrics.map((lyric, index) => (
-              <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
-                <p className="font-bold text-gray-800 text-lg pt-1">{lyric.verse}</p>
-                <p className="text-xl text-gray-800 whitespace-pre-line leading-relaxed">
-                  {lyric.text}
-                </p>
-              </div>
-            ))}
+            {Array.isArray(lyrics) && lyrics.length > 0 ? (
+              lyrics.map((lyric, index) => (
+                <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
+                  <p className="font-bold text-gray-800 text-lg pt-1">{lyric.verse || lyric.number}</p>
+                  <p className="text-xl text-gray-800 whitespace-pre-line leading-relaxed">
+                    {lyric.text || 'Teks tidak ditemukan'}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500">Lirik untuk lagu ini tidak tersedia.</p>
+            )}
           </div>
         </div>
 
