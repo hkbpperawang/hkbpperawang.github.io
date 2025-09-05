@@ -40,7 +40,7 @@ export default function RootLayout({
   <body className="min-h-dvh bg-white text-slate-900 dark:bg-brand-base dark:text-slate-100">
         <ThemeProvider>
           <div className="relative min-h-screen">
-            <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-brand-base/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-brand-base/50 border-white/20 dark:border-white/10">
+            <header className="sticky top-0 z-20 border-b shadow-sm bg-white dark:bg-brand-base border-slate-200 dark:border-brand-border">
               <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
                 <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
                   <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />

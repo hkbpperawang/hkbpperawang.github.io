@@ -77,29 +77,29 @@ export default function HomePage() {
   const col3 = filteredSongs.slice(col1Count + col2Count, col1Count + col2Count + col3Count);
 
   return (
-  <main className="bg-gray-50 dark:bg-brand-base min-h-screen">
+  <main className="bg-white dark:bg-brand-base min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">Pilih Lagu</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">Buku Ende dan Buku Nyanyian HKBP</p>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">Pilih Lagu</h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 mt-2">Buku Ende dan Buku Nyanyian HKBP</p>
         </header>
 
         <div className="mx-auto mb-8 max-w-3xl">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3">
             <div className="flex-1">
-              <label htmlFor="book-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pilih Buku:</label>
+              <label htmlFor="book-select" className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">Pilih Buku:</label>
               <select 
                 id="book-select"
                 value={selectedBook}
                 onChange={(e) => setSelectedBook(e.target.value)}
-                className="block w-full p-3 border border-gray-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full p-3 border border-slate-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface text-slate-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="be">Buku Ende (BE)</option>
                 <option value="bn">Buku Nyanyian (BN)</option>
               </select>
             </div>
             <div className="md:w-[320px]">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Loncat ke nomor:</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">Loncat ke nomor:</label>
               <QuickNavigator
                 mode="inline"
                 book={selectedBookTyped}
