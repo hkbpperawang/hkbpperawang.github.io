@@ -31,7 +31,7 @@ async function getAllSongs(): Promise<SongInfo[]> {
 }
 
 async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
   const fileName = fileNameNoExt.endsWith('.json') ? fileNameNoExt : `${fileNameNoExt}.json`;
   const path = `${type}/${fileName}`;
@@ -42,12 +42,20 @@ async function getSongContent(type: string, fileNameNoExt: string): Promise<Song
   }
 
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28' },
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.v3+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'HKBP-Perawang-App'
+    },
     next: { revalidate: 3600 },
   });
 
   if (res.status === 404) notFound();
-  if (!res.ok) throw new Error(`Failed to fetch song data for ${path}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to fetch song data for ${path}: ${res.status} ${res.statusText} — ${text}`);
+  }
 
   const data = await res.json();
   const content = Buffer.from(data.content, 'base64').toString('utf-8');

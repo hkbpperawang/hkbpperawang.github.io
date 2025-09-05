@@ -9,7 +9,7 @@ interface GitHubFile {
 
 // Function to fetch contents from a specific directory in the GitHub repo
 async function fetchRepoContents(directory: string) {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
   const url = `https://api.github.com/repos/${repo}/contents/${directory}`;
 
@@ -20,9 +20,10 @@ async function fetchRepoContents(directory: string) {
 
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${token}`,
       'Accept': 'application/vnd.github.v3+json',
       'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'HKBP-Perawang-App',
     },
     next: { revalidate: 3600 } // Revalidate every hour
   });

@@ -16,13 +16,13 @@ function cleanJudul(type: 'be' | 'bn', judul: string): string {
 }
 
 async function listFiles(type: 'be' | 'bn') {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   if (!token || token === 'PASTE_YOUR_NEW_AND_SECRET_TOKEN_HERE') {
     throw new Error('Server configuration error: GITHUB_TOKEN is missing.');
   }
   const url = `https://api.github.com/repos/${repo}/contents/${type}`;
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28' },
+  headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'HKBP-Perawang-App' },
     next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error(`List ${type} failed: ${res.status}`);
@@ -31,10 +31,10 @@ async function listFiles(type: 'be' | 'bn') {
 }
 
 async function fetchJson(path: string) {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const url = `https://api.github.com/repos/${repo}/contents/${path}`;
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28' },
+  headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'HKBP-Perawang-App' },
     next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error(`Fetch ${path} failed: ${res.status}`);

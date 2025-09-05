@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+  <html lang="en" suppressHydrationWarning className="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -49,7 +49,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100`}>
+  <body className={`${inter.className}`}>
         <ThemeProvider>
           <div className="relative min-h-screen">
             <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-gray-950/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-gray-950/50 border-white/20 dark:border-white/10">
