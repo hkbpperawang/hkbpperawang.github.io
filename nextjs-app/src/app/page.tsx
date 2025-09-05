@@ -12,6 +12,9 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [titles, setTitles] = useState<Record<string, string>>({}); // key: `${type}/${name}` -> title
   const [selectedBook, setSelectedBook] = useState('be'); // 'be' or 'bn'
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [results, setResults] = useState<Array<{ type: 'be'|'bn'; name: string; title: string; snippet: string }>>([]);
 
   // Fetch songs on the client side
   useEffect(() => {
@@ -82,6 +85,38 @@ export default function HomePage() {
             <option value="be">Buku Ende (BE)</option>
             <option value="bn">Buku Nyanyian (BN)</option>
           </select>
+          <div className="mt-4">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={async (e) => {
+                if (e.key === 'Enter') {
+                  try {
+                    setSearching(true);
+                    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${selectedBook}`);
+                    const data = await res.json();
+                    setResults(data.results || []);
+                  } finally {
+                    setSearching(false);
+                  }
+                }
+              }}
+              placeholder="Cari judul/lirik... (tekan Enter)"
+              className="block w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+            {searching && (<p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Mencari...</p>)}
+            {!searching && results.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {results.map((r, i) => (
+                  <Link key={`${r.type}-${r.name}-${i}`} href={`/songs/${r.type}/${r.name}`} className="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <p className="text-sm font-semibold">{r.title}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{r.snippet}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {loading ? (
@@ -99,7 +134,7 @@ export default function HomePage() {
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? song.name}`}
                       >
-                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-center bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
+                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
                           <span className={`font-semibold block uppercase break-words ${selectedBook === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} min-h-10 md:min-h-10 leading-snug`}>
                             {titles[`${song.type}/${song.name}`] ?? song.name}
                           </span>

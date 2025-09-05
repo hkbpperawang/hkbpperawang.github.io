@@ -18,6 +18,7 @@ interface Bait {
 
 interface SongData {
   judul: string;
+  judul_asli?: string;
   bait: Bait[];
 }
 
@@ -105,6 +106,9 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
 
         <header className="text-center border-b dark:border-gray-700 pb-6 mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul}</h1>
+          {type === 'bn' && song.judul_asli ? (
+            <p className="mt-2 text-base md:text-lg text-gray-600 dark:text-gray-300">{song.judul_asli}</p>
+          ) : null}
         </header>
 
         <div className="max-w-2xl mx-auto">
