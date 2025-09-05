@@ -67,8 +67,8 @@ export default function HomePage() {
     <main className="bg-gray-50 dark:bg-gray-950 min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">Daftar Nyanyian</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">HKBP Perawang</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">Pilih Lagu</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">Buku Ende dan Buku Nyanyian HKBP</p>
         </header>
 
         <div className="max-w-md mx-auto mb-8">

@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Nyanyian HKBP Perawang",
-  description: "Buku Ende dan Buku Nyanyian HKBP Perawang",
+  description: "Buku Ende dan Buku Nyanyian HKBP oleh Tim Digital HKBP Perawang",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -34,7 +34,7 @@ export default function RootLayout({
               <div className="max-w-6xl mx-auto px-4 py-3 grid grid-cols-1 md:grid-cols-[auto,1fr,auto] items-center gap-3">
                 <div className="flex items-center gap-3">
                   <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded" />
-                  <h1 className="text-lg font-semibold">Nyanyian HKBP Perawang</h1>
+                  <h1 className="text-lg font-semibold">BE dan BN HKBP</h1>
                 </div>
                 <div className="justify-self-center w-full flex items-center justify-center">
                   <SearchBox />

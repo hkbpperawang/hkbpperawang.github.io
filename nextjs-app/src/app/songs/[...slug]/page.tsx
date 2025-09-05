@@ -33,7 +33,6 @@ async function getAllSongs(): Promise<SongInfo[]> {
 async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
   const token = process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
-  // Tambahkan .json hanya untuk akses GitHub Source, bukan untuk URL publik
   const fileName = fileNameNoExt.endsWith('.json') ? fileNameNoExt : `${fileNameNoExt}.json`;
   const path = `${type}/${fileName}`;
   const url = `https://api.github.com/repos/${repo}/contents/${path}`;
