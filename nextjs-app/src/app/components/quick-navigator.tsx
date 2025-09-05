@@ -5,15 +5,24 @@ import { useRouter, usePathname } from 'next/navigation';
 
 type Song = { name: string; type: 'be' | 'bn' };
 
-export function QuickNavigator() {
+type QuickNavigatorProps = {
+  mode?: 'floating' | 'inline';
+  book?: 'be' | 'bn'; // controlled
+  onBookChange?: (b: 'be'|'bn') => void;
+  showBookSelect?: boolean;
+  className?: string;
+};
+
+export function QuickNavigator({ mode = 'floating', book: controlledBook, onBookChange, showBookSelect = true, className }: QuickNavigatorProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = React.useState(true);
-  const [book, setBook] = React.useState<'be' | 'bn'>(() => {
+  const [bookState, setBookState] = React.useState<'be' | 'bn'>(() => {
     // Deteksi dari URL bila mungkin
     const m = pathname?.match(/\/songs\/(be|bn)\//);
     return (m?.[1] as 'be' | 'bn') ?? 'be';
   });
+  const book = controlledBook ?? bookState;
   const [input, setInput] = React.useState('');
   const [songs, setSongs] = React.useState<Record<'be'|'bn', string[]>>({ be: [], bn: [] });
   const [open, setOpen] = React.useState(false);
@@ -74,20 +83,41 @@ export function QuickNavigator() {
     };
   }, [open, book, input, go]);
 
-  return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-30">
-      <div ref={panelRef} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg p-2 md:p-3 flex items-center gap-2">
-        <select
-          value={book}
-          onChange={(e) => { setBook(e.target.value as 'be' | 'bn'); setTimeout(()=>inputRef.current?.focus(), 0); }}
-          className="px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-          aria-label="Pilih buku"
-        >
-          <option value="be">BE</option>
-          <option value="bn">BN</option>
-        </select>
+  const Container = ({ children }: { children: React.ReactNode }) => (
+    mode === 'floating' ? (
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-30">
+        <div ref={panelRef} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg p-2 md:p-3 flex items-center gap-2">
+          {children}
+        </div>
+      </div>
+    ) : (
+      <div ref={panelRef} className={"relative flex items-center gap-2 w-full " + (className ?? '')}>
+        {children}
+      </div>
+    )
+  );
 
-        <div className="relative">
+  const BookSelect = showBookSelect ? (
+    <select
+      value={book}
+      onChange={(e) => {
+        const val = e.target.value as 'be'|'bn';
+        if (onBookChange) onBookChange(val); else setBookState(val);
+        setTimeout(()=>inputRef.current?.focus(), 0);
+      }}
+      className="px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+      aria-label="Pilih buku"
+    >
+      <option value="be">BE</option>
+      <option value="bn">BN</option>
+    </select>
+  ) : null;
+
+  return (
+    <Container>
+      {BookSelect}
+
+    <div className="relative flex-1">
           <input
             ref={inputRef}
             value={input}
@@ -98,7 +128,7 @@ export function QuickNavigator() {
             inputMode="numeric"
             pattern="[0-9]*"
             spellCheck={false}
-            className="w-28 md:w-40 px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className={(mode === 'inline' ? 'w-full md:w-40 ' : 'w-28 md:w-40 ') + "px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"}
             aria-label="Ketik nomor lagu lalu Enter"
           />
           {open && suggestions.length > 0 && (
@@ -122,7 +152,6 @@ export function QuickNavigator() {
             <path d="M13.5 4.5l6 7.5-6 7.5m-9-15h9"/>
           </svg>
         </button>
-      </div>
-    </div>
+    </Container>
   );
 }

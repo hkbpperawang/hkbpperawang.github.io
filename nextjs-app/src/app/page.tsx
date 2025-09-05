@@ -1,7 +1,9 @@
+
 'use client'; // This marks the component as interactive
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { QuickNavigator } from '@/app/components/quick-navigator';
 
 // Interface for song data
 interface Song { name: string; path: string; type: string }
@@ -12,6 +14,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [titles, setTitles] = useState<Record<string, string>>({}); // key: `${type}/${name}` -> title
   const [selectedBook, setSelectedBook] = useState('be'); // 'be' or 'bn'
+  const selectedBookTyped = (selectedBook as 'be'|'bn');
 
   // Fetch songs on the client side
   useEffect(() => {
@@ -71,17 +74,31 @@ export default function HomePage() {
           <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">Buku Ende dan Buku Nyanyian HKBP</p>
         </header>
 
-        <div className="max-w-md mx-auto mb-8">
-          <label htmlFor="book-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pilih Buku:</label>
-          <select 
-            id="book-select"
-            value={selectedBook}
-            onChange={(e) => setSelectedBook(e.target.value)}
-            className="block w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="be">Buku Ende (BE)</option>
-            <option value="bn">Buku Nyanyian (BN)</option>
-          </select>
+        <div className="mx-auto mb-8 max-w-3xl">
+          <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3">
+            <div className="flex-1">
+              <label htmlFor="book-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pilih Buku:</label>
+              <select 
+                id="book-select"
+                value={selectedBook}
+                onChange={(e) => setSelectedBook(e.target.value)}
+                className="block w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="be">Buku Ende (BE)</option>
+                <option value="bn">Buku Nyanyian (BN)</option>
+              </select>
+            </div>
+            <div className="md:w-[320px]">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Loncat ke nomor:</label>
+              <QuickNavigator
+                mode="inline"
+                book={selectedBookTyped}
+                onBookChange={(b: 'be'|'bn') => setSelectedBook(b)}
+                showBookSelect={false}
+                className="w-full"
+              />
+            </div>
+          </div>
         </div>
 
         {loading ? (
