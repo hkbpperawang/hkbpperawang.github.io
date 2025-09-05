@@ -34,21 +34,7 @@ export default function RootLayout({
 }>) {
   return (
   <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const m = localStorage.getItem('theme');
-                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = m === 'dark' || (m === 'system' && systemDark) || (!m && systemDark) ? 'dark' : 'light';
-                document.documentElement.classList.remove('light','dark');
-                document.documentElement.classList.add(theme);
-              } catch {}
-            `,
-          }}
-        />
-      </head>
+      <head />
   <body className={`${inter.className} bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100`}>
         <ThemeProvider>
           <div className="relative min-h-screen">
