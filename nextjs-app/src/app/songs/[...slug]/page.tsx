@@ -29,9 +29,11 @@ async function getAllSongs(): Promise<SongInfo[]> {
   return data.songs;
 }
 
-async function getSongContent(type: string, fileName: string): Promise<SongData> {
+async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
   const token = process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
+  // Tambahkan .json hanya untuk akses GitHub Source, bukan untuk URL publik
+  const fileName = fileNameNoExt.endsWith('.json') ? fileNameNoExt : `${fileNameNoExt}.json`;
   const path = `${type}/${fileName}`;
   const url = `https://api.github.com/repos/${repo}/contents/${path}`;
 
@@ -74,7 +76,8 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
     .filter(s => s.type === type)
     .sort((a, b) => parseInt(a.name) - parseInt(b.name));
   
-  const currentIndex = bookSongs.findIndex(s => s.path === `${type}/${fileName}`);
+  // Cari indeks berdasarkan type + name (tanpa ekstensi)
+  const currentIndex = bookSongs.findIndex(s => s.type === type && s.name === fileName);
   const prevSong = currentIndex > 0 ? bookSongs[currentIndex - 1] : null;
   const nextSong = currentIndex < bookSongs.length - 1 ? bookSongs[currentIndex + 1] : null;
 
@@ -88,12 +91,12 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
           </Link>
           <div className="flex items-center space-x-2">
             {prevSong ? (
-              <Link href={`/songs/${prevSong.path}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
+              <Link href={`/songs/${prevSong.type}/${prevSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
                 &larr; {prevSong.name}
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}
             {nextSong ? (
-              <Link href={`/songs/${nextSong.path}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
+              <Link href={`/songs/${nextSong.type}/${nextSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
                 {nextSong.name} &rarr;
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}

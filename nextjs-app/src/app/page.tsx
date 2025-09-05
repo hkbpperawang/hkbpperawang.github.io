@@ -61,7 +61,7 @@ export default function HomePage() {
           <section>
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-2">
               {filteredSongs.map(song => (
-                <Link key={song.path} href={`/songs/${song.path}`}>
+                <Link key={song.path} href={`/songs/${song.type}/${song.name}`}>
                   <div className={`p-2 border rounded-md text-center bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
                     <span className={`font-semibold ${selectedBook === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'}`}>
                       {song.name}
