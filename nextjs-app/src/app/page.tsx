@@ -1,5 +1,5 @@
 
-'use client'; // This marks the component as interactive
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -12,8 +12,8 @@ interface TitleItem { name: string; type: 'be' | 'bn'; title: string }
 export default function HomePage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
-  const [titles, setTitles] = useState<Record<string, string>>({}); // key: `${type}/${name}` -> title
-  const [selectedBook, setSelectedBook] = useState('be'); // 'be' or 'bn'
+  const [titles, setTitles] = useState<Record<string, string>>({});
+  const [selectedBook, setSelectedBook] = useState('be');
   const selectedBookTyped = (selectedBook as 'be'|'bn');
 
   // Fetch songs on the client side
@@ -55,7 +55,7 @@ export default function HomePage() {
     .filter(song => song.type === selectedBook)
     .sort((a, b) => parseInt(a.name) - parseInt(b.name));
 
-  // Bagi menjadi 3 kolom: kolom 1 dan 2 sama jumlah baris, kolom 3 sisanya (lebih sedikit)
+  // 3 kolom: kolom
   const total = filteredSongs.length;
   const per12 = Math.ceil(total / 3);
   const col1Count = Math.min(per12, total);

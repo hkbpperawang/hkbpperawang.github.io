@@ -27,6 +27,7 @@ export function QuickNavigator({ mode = 'floating', book: controlledBook, onBook
   const [songs, setSongs] = React.useState<Record<'be'|'bn', string[]>>({ be: [], bn: [] });
   const [open, setOpen] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const hasFocused = React.useRef(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -122,7 +123,15 @@ export function QuickNavigator({ mode = 'floating', book: controlledBook, onBook
             ref={inputRef}
             value={input}
             onChange={(e) => { setInput(e.target.value); setOpen(true); }}
-            onFocus={(e) => { setOpen(true); e.currentTarget.select(); }}
+            onFocus={() => {
+              setOpen(true);
+              // Hindari memilih ulang teks yang membuat kursor terlihat "hilang"
+              if (!hasFocused.current && !input) {
+                // Biarkan select hanya pada fokus pertama dan saat kosong
+                // e.currentTarget.select();
+                hasFocused.current = true;
+              }
+            }}
             onKeyDown={(e) => { if (e.key === 'Enter') go(); }}
             placeholder={loading ? 'Memuat...' : `Nomor ${book.toUpperCase()}…`}
             inputMode="numeric"
@@ -132,9 +141,22 @@ export function QuickNavigator({ mode = 'floating', book: controlledBook, onBook
             aria-label="Ketik nomor lagu lalu Enter"
           />
           {open && suggestions.length > 0 && (
-            <div className="absolute left-0 right-0 mt-1 max-h-48 overflow-auto rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow animate-fade-in-up">
+            <div
+              className="absolute left-0 right-0 mt-1 max-h-48 overflow-auto rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow animate-fade-in-up"
+              // Cegah hilangnya fokus input saat user klik/scroll daftar saran
+              onMouseDown={(e) => e.preventDefault()}
+              role="listbox"
+              aria-label="Saran nomor"
+            >
               {suggestions.map((s) => (
-                <button key={s} onClick={() => go(s)} className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <button
+                  key={s}
+                  onClick={() => go(s)}
+                  className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  role="option"
+                  aria-selected="false"
+                  tabIndex={-1}
+                >
                   {s}
                 </button>
               ))}

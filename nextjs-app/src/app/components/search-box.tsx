@@ -14,7 +14,6 @@ export function SearchBox() {
     if (!query) return;
     setSearching(true);
     router.push(`/search?q=${encodeURIComponent(query)}`);
-    // kecilkan delay agar status sempat terlihat
     setTimeout(() => { setSearching(false); setOpen(false); }, 150);
   };
 
