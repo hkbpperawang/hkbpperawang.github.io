@@ -25,7 +25,7 @@ async function fetchRepoContents(directory: string) {
       'X-GitHub-Api-Version': '2022-11-28',
       'User-Agent': 'HKBP-Perawang-App',
     },
-    next: { revalidate: 3600 } // Revalidate every hour
+    next: { revalidate: 900, tags: ['songs', `songs:${directory}`] } // Tag cache untuk revalidate instan
   });
 
   if (!response.ok) {
@@ -57,7 +57,8 @@ export async function GET() {
     const allSongs = [...beFiles, ...bnFiles];
 
   const res = NextResponse.json({ songs: allSongs });
-  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  // Turunkan cache agar update muncul lebih cepat di edge/CDN
+  res.headers.set('Cache-Control', 'public, s-maxage=1800, max-age=300, stale-while-revalidate=900');
   return res;
   } catch (error) {
     // Handle the error type safely without using 'any'

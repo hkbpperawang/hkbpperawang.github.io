@@ -23,7 +23,7 @@ async function listFiles(type: 'be' | 'bn') {
   const url = `https://api.github.com/repos/${repo}/contents/${type}`;
   const res = await fetch(url, {
   headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'HKBP-Perawang-App' },
-    next: { revalidate: 3600 },
+    next: { revalidate: 900, tags: ['content', `content:${type}`] },
   });
   if (!res.ok) throw new Error(`List ${type} failed: ${res.status}`);
   const items = (await res.json()) as GitHubFile[];
@@ -35,7 +35,7 @@ async function fetchJson(path: string) {
   const url = `https://api.github.com/repos/${repo}/contents/${path}`;
   const res = await fetch(url, {
   headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'HKBP-Perawang-App' },
-    next: { revalidate: 3600 },
+    next: { revalidate: 900, tags: ['content'] },
   });
   if (!res.ok) throw new Error(`Fetch ${path} failed: ${res.status}`);
   const data = await res.json();
@@ -82,8 +82,8 @@ export async function GET(req: Request) {
 
   // Batasi hasil agar respons cepat
   const res = NextResponse.json({ results: hits.slice(0, 50) });
-  // Cache publik 1 bulan dengan revalidate di edge
-  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  // Turunkan cache agar update cepat terpantau
+  res.headers.set('Cache-Control', 'public, s-maxage=1800, max-age=300, stale-while-revalidate=900');
   return res;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unknown error';

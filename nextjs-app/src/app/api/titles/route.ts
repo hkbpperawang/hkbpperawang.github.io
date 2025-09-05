@@ -39,7 +39,7 @@ async function listFiles(type: 'be' | 'bn') {
       'X-GitHub-Api-Version': '2022-11-28',
       'User-Agent': 'HKBP-Perawang-App',
     },
-    next: { revalidate: 3600 },
+    next: { revalidate: 900, tags: ['titles', `titles:${type}`] },
   });
 
   if (!response.ok) {
@@ -117,7 +117,7 @@ export async function GET(req: Request) {
     items.sort((a, b) => parseInt(a.name) - parseInt(b.name));
 
   const res = NextResponse.json({ titles: items }, { status: 200 });
-  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  res.headers.set('Cache-Control', 'public, s-maxage=1800, max-age=300, stale-while-revalidate=900');
   return res;
   } catch (err) {
     let message = 'Unknown error';

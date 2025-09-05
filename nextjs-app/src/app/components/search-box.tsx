@@ -77,7 +77,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/songs', { cache: 'force-cache' });
+  const res = await fetch('/api/songs', { cache: 'no-cache' });
         const data = await res.json();
         if (cancelled) return;
         const be = new Set<string>();

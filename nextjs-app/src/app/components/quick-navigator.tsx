@@ -34,13 +34,15 @@ export function QuickNavigator({
   const [songs, setSongs] = React.useState<Record<'be'|'bn', string[]>>({ be: [], bn: [] });
   const [open, setOpen] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const listboxId = React.useId();
 
   // Ambil daftar nomor dari API (sudah di-cache CDN)
   React.useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch('/api/songs');
+  const res = await fetch('/api/songs', { cache: 'no-cache' });
         const data = await res.json();
         if (!mounted) return;
         const grouped: Record<'be'|'bn', string[]> = { be: [], bn: [] };
@@ -91,8 +93,11 @@ export function QuickNavigator({
     };
   }, [open, go]);
 
+  // Reset index saat saran berubah atau dropdown dibuka
+  React.useEffect(() => { setActiveIndex(0); }, [open, input, book]);
+
   return (
-    <div ref={panelRef} className={`relative ${className ?? ''}`}>
+    <div ref={panelRef} className={`relative ${className ?? ''}`} data-mode={mode}>
       <div className="flex items-center gap-2">
         {showBookSelect ? (
           <select
@@ -117,7 +122,6 @@ export function QuickNavigator({
           inputMode="numeric"
           pattern="[0-9]*"
           spellCheck={false}
-          aria-expanded={open}
           placeholder={loading ? 'Memuat…' : `Nomor ${book.toUpperCase()}…`}
           className="w-40 md:w-48 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm
                      focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-slate-600
@@ -125,7 +129,25 @@ export function QuickNavigator({
           value={input}
           onChange={(e) => { setInput(e.target.value.replace(/[^\d]/g, '')); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          onKeyDown={(e) => { if (e.key === 'Enter') go(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              if (open && suggestions.length > 0) {
+                go(String(suggestions[activeIndex]));
+              } else {
+                go();
+              }
+            }
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setOpen(true);
+              setActiveIndex((i) => Math.min(i + 1, Math.max(0, suggestions.length - 1)));
+            }
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              setActiveIndex((i) => Math.max(0, i - 1));
+            }
+            if (e.key === 'Escape') setOpen(false);
+          }}
         />
 
         <button
@@ -140,21 +162,19 @@ export function QuickNavigator({
 
       {open && suggestions.length > 0 && (
         <div
-          role="listbox"
-          aria-label="Saran nomor"
+          id={listboxId}
           className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border border-slate-200
                      bg-white shadow-lg ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900
                      animate-fade-in-up"
           // Cegah blur input saat interaksi dropdown
           onMouseDown={(e) => e.preventDefault()}
         >
-          {suggestions.map((num) => (
+          {suggestions.map((num, idx) => (
             <div
               key={num}
-              role="option"
-              tabIndex={-1}
-              className="cursor-pointer px-3 py-2 text-sm text-slate-800 hover:bg-slate-100
-                         dark:text-slate-100 dark:hover:bg-slate-800"
+              id={`${listboxId}-opt-${idx}`}
+              className={`cursor-pointer px-3 py-2 text-sm text-slate-800 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800 ${activeIndex === idx ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
+              onMouseEnter={() => setActiveIndex(idx)}
               onClick={() => {
                 setOpen(false);
                 go(String(num));
