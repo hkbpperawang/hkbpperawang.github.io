@@ -3,6 +3,12 @@ html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; 
 @media (prefers-reduced-motion: no-preference) {
 	:root { scroll-behavior: smooth; }
 }
+
+@keyframes fade-in-up {
+	0% { opacity: 0; transform: translateY(6px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fade-in-up 140ms ease-out; }
 @import "tailwindcss";
 
 /* You can add custom base styles here if needed */
