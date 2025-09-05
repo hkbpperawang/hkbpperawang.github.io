@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/app/components/theme-provider";
 import { ThemeSwitcher } from "@/app/components/theme-switcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,8 @@ export default function RootLayout({
         </ThemeProvider>
   {/* Vercel Speed Insights */}
   <SpeedInsights />
+  {/* Vercel Analytics */}
+  <Analytics />
       </body>
     </html>
   );
