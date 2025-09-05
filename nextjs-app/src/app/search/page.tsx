@@ -26,11 +26,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   }
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen">
+  <main className="bg-white dark:bg-brand-base min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Hasil Pencarian</h1>
-          <Link href="/" className="text-sm px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">Kembali</Link>
+          <Link href="/" className="text-sm px-3 py-2 rounded-md border border-gray-300 dark:border-brand-border-strong hover:bg-gray-100 dark:hover:bg-brand-hover">Kembali</Link>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Kata kunci: <span className="font-semibold">{q}</span></p>
         {errorMsg ? (
@@ -40,7 +40,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         ) : (
           <ul className="space-y-3">
             {data.results.map((r, i) => (
-              <li key={`${r.type}-${r.name}-${i}`} className="p-3 border rounded-md bg-white dark:bg-gray-800/50 dark:border-gray-700">
+              <li key={`${r.type}-${r.name}-${i}`} className="p-3 border rounded-md bg-white dark:bg-brand-surface/50 dark:border-brand-border-strong">
                 <Link href={`/songs/${r.type}/${r.name}`} className="font-semibold hover:underline">
                   {r.title}
                 </Link>

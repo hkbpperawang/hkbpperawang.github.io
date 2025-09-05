@@ -91,7 +91,7 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
   const nextSong = currentIndex < bookSongs.length - 1 ? bookSongs[currentIndex + 1] : null;
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen">
+  <main className="bg-white dark:bg-brand-base min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         
         <nav className="flex justify-between items-center mb-6 text-sm">
@@ -100,19 +100,19 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
           </Link>
           <div className="flex items-center space-x-2">
             {prevSong ? (
-              <Link href={`/songs/${prevSong.type}/${prevSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
+              <Link href={`/songs/${prevSong.type}/${prevSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-brand-surface rounded-md hover:bg-gray-200 dark:hover:bg-brand-hover text-gray-800 dark:text-gray-200 transition-colors">
                 &larr; {prevSong.name}
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}
             {nextSong ? (
-              <Link href={`/songs/${nextSong.type}/${nextSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
+              <Link href={`/songs/${nextSong.type}/${nextSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-brand-surface rounded-md hover:bg-gray-200 dark:hover:bg-brand-hover text-gray-800 dark:text-gray-200 transition-colors">
                 {nextSong.name} &rarr;
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}
           </div>
         </nav>
 
-        <header className="text-center border-b dark:border-gray-700 pb-6 mb-8">
+  <header className="text-center border-b dark:border-brand-border pb-6 mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul || song.judul_asli || ''}</h1>
           {type === 'bn' && song.judul_asli ? (
             <p className="mt-2 text-base md:text-lg text-gray-600 dark:text-gray-300">{song.judul_asli}</p>

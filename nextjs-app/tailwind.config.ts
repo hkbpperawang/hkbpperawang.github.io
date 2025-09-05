@@ -8,7 +8,17 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          base: '#17153B', // base background dark
+          surface: '#0f0e2c', // surface elements (cards, inputs)
+          hover: '#1a1850', // hover/active surface
+          border: '#23215a', // subtle border
+          'border-strong': '#2b2966', // stronger border
+        },
+      },
+    },
   },
   plugins: [],
 };

@@ -121,7 +121,7 @@ export default function NotFoundPage() {
   }, [collides]);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center">
+  <main className="min-h-screen bg-gray-50 dark:bg-brand-base text-slate-900 dark:text-slate-100 flex flex-col items-center">
       <div className="max-w-3xl w-full px-4 pt-10 pb-6 text-center">
         <h1 className="text-3xl font-bold">404 — Halaman tidak ditemukan</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">Sambil menunggu, mainkan Tetris mini di bawah ini.</p>
@@ -132,13 +132,13 @@ export default function NotFoundPage() {
       </div>
 
       <div className="w-full flex flex-col items-center gap-4">
-  <canvas ref={canvasRef} className="rounded-md border border-slate-200 dark:border-slate-800 shadow touch-none" />
+  <canvas ref={canvasRef} className="rounded-md border border-slate-200 dark:border-brand-border shadow touch-none" />
 
         <div className="flex items-center gap-2">
-          <button aria-label="Kiri" className="px-3 py-2 rounded bg-slate-200 dark:bg-slate-800" onClick={()=>setPos(p=>!collides(p.x-1,p.y)?{...p,x:p.x-1}:p)}>◀</button>
-          <button aria-label="Putar" className="px-3 py-2 rounded bg-slate-200 dark:bg-slate-800" onClick={()=>{const rot=rotate(shape); if(!collides(pos.x,pos.y,rot)) setShape(rot);}}>⟳</button>
-          <button aria-label="Turun" className="px-3 py-2 rounded bg-slate-200 dark:bg-slate-800" onClick={()=>setPos(p=>!collides(p.x,p.y+1)?{...p,y:p.y+1}:p)}>▼</button>
-          <button aria-label="Kanan" className="px-3 py-2 rounded bg-slate-200 dark:bg-slate-800" onClick={()=>setPos(p=>!collides(p.x+1,p.y)?{...p,x:p.x+1}:p)}>▶</button>
+          <button aria-label="Kiri" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x-1,p.y)?{...p,x:p.x-1}:p)}>◀</button>
+          <button aria-label="Putar" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>{const rot=rotate(shape); if(!collides(pos.x,pos.y,rot)) setShape(rot);}}>⟳</button>
+          <button aria-label="Turun" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x,p.y+1)?{...p,y:p.y+1}:p)}>▼</button>
+          <button aria-label="Kanan" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x+1,p.y)?{...p,x:p.x+1}:p)}>▶</button>
         </div>
 
         <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">Skor: {score}</div>

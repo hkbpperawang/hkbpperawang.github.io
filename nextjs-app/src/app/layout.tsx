@@ -37,10 +37,10 @@ export default function RootLayout({
       <head>
         <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Nyanyian HKBP" />
       </head>
-      <body className="min-h-dvh bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+  <body className="min-h-dvh bg-white text-slate-900 dark:bg-brand-base dark:text-slate-100">
         <ThemeProvider>
           <div className="relative min-h-screen">
-            <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-gray-950/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-gray-950/50 border-white/20 dark:border-white/10">
+            <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-brand-base/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-brand-base/50 border-white/20 dark:border-white/10">
               <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
                 <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
                   <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />
@@ -53,7 +53,7 @@ export default function RootLayout({
               </div>
             </header>
             <main>{children}</main>
-            <footer className="mt-8 border-t border-gray-200 dark:border-gray-800">
+            <footer className="mt-8 border-t border-gray-200 dark:border-[#23215a]">
               <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <p>© 2024–{new Date().getFullYear()} HKBP Perawang.</p>
                 <p>

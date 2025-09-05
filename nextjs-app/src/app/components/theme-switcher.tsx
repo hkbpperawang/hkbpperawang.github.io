@@ -18,7 +18,7 @@ export default function ThemeSwitcher() {
       aria-label={isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className="inline-flex h-9 w-9 items-center justify-center rounded-md
-                 hover:bg-slate-200/50 dark:hover:bg-slate-800/60
+                 hover:bg-slate-200/50 dark:hover:bg-brand-hover/60
                  focus:outline-none focus:ring-2 focus:ring-sky-500"
     >
       {/* ikon sederhana */}

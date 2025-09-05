@@ -7,7 +7,7 @@ type Song = { name: string; type: 'be' | 'bn' };
 
 type QuickNavigatorProps = {
   mode?: 'floating' | 'inline';
-  book?: 'be' | 'bn'; // controlled
+  book?: 'be' | 'bn';
   onBookChange?: (b: 'be'|'bn') => void;
   showBookSelect?: boolean;
   className?: string;
@@ -37,7 +37,6 @@ export function QuickNavigator({
   const [activeIndex, setActiveIndex] = React.useState(0);
   const listboxId = React.useId();
 
-  // Ambil daftar nomor dari API (sudah di-cache CDN)
   React.useEffect(() => {
     let mounted = true;
     (async () => {
@@ -73,7 +72,6 @@ export function QuickNavigator({
     router.push(`/songs/${book}/${encodeURIComponent(v)}`);
   }, [book, input, router]);
 
-  // Tutup dropdown saran saat klik di luar atau tekan ESC
   const panelRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     function onDown(e: MouseEvent) {
@@ -93,7 +91,6 @@ export function QuickNavigator({
     };
   }, [open, go]);
 
-  // Reset index saat saran berubah atau dropdown dibuka
   React.useEffect(() => { setActiveIndex(0); }, [open, input, book]);
 
   return (
@@ -105,10 +102,9 @@ export function QuickNavigator({
             onChange={(e) => {
               const val = e.target.value as 'be'|'bn';
               if (onBookChange) onBookChange(val); else setBookState(val);
-              // fokuskan kembali ke input agar ready ketik
               setTimeout(()=>inputRef.current?.focus(), 0);
             }}
-            className="px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+            className="px-2 py-1.5 text-sm rounded-md border border-gray-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface"
             aria-label="Pilih buku"
           >
             <option value="be">BE</option>
@@ -124,8 +120,8 @@ export function QuickNavigator({
           spellCheck={false}
           placeholder={loading ? 'Memuat…' : `Nomor ${book.toUpperCase()}…`}
           className="w-40 md:w-48 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-slate-600
-                     dark:bg-slate-900 dark:text-slate-100"
+                     focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-brand-border-strong
+                     dark:bg-[#0f0e2c] dark:text-slate-100"
           value={input}
           onChange={(e) => { setInput(e.target.value.replace(/[^\d]/g, '')); setOpen(true); }}
           onFocus={() => setOpen(true)}
@@ -164,16 +160,16 @@ export function QuickNavigator({
         <div
           id={listboxId}
           className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border border-slate-200
-                     bg-white shadow-lg ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900
+                     bg-white shadow-lg ring-1 ring-black/5 dark:border-brand-border dark:bg-brand-surface
                      animate-fade-in-up"
-          // Cegah blur input saat interaksi dropdown
+
           onMouseDown={(e) => e.preventDefault()}
         >
           {suggestions.map((num, idx) => (
             <div
               key={num}
               id={`${listboxId}-opt-${idx}`}
-              className={`cursor-pointer px-3 py-2 text-sm text-slate-800 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800 ${activeIndex === idx ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
+              className={`cursor-pointer px-3 py-2 text-sm text-slate-800 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-brand-hover ${activeIndex === idx ? 'bg-slate-100 dark:bg-brand-hover' : ''}`}
               onMouseEnter={() => setActiveIndex(idx)}
               onClick={() => {
                 setOpen(false);

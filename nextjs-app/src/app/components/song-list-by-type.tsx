@@ -52,7 +52,7 @@ export function SongListByType({ type }: { type: Book }) {
   const col3 = filteredSongs.slice(perCol * 2);
 
   return (
-    <main className="bg-gray-50 dark:bg-gray-950 min-h-screen">
+  <main className="bg-gray-50 dark:bg-brand-base min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">Daftar Lagu {type.toUpperCase()}</h1>
@@ -83,7 +83,7 @@ export function SongListByType({ type }: { type: Book }) {
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? `Nomor ${song.name}`}`}
                       >
-                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${type === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
+                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-[#0f0e2c]/50 dark:border-[#2b2966] hover:shadow-md transition-all cursor-pointer ${type === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
                           <div className="flex flex-col">
                             <span className={`font-semibold block uppercase break-words ${type === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} leading-snug`}>
                               {titles[`${song.type}/${song.name}`] ?? ''}

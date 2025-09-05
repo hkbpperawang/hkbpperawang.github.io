@@ -76,7 +76,7 @@ export default function HomePage() {
   const col3 = filteredSongs.slice(col1Count + col2Count, col1Count + col2Count + col3Count);
 
   return (
-    <main className="bg-gray-50 dark:bg-gray-950 min-h-screen">
+  <main className="bg-gray-50 dark:bg-brand-base min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">Pilih Lagu</h1>
@@ -91,7 +91,7 @@ export default function HomePage() {
                 id="book-select"
                 value={selectedBook}
                 onChange={(e) => setSelectedBook(e.target.value)}
-                className="block w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full p-3 border border-gray-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="be">Buku Ende (BE)</option>
                 <option value="bn">Buku Nyanyian (BN)</option>
@@ -109,14 +109,14 @@ export default function HomePage() {
             </div>
           </div>
           {showOmniboxHint && (
-            <div className="mt-4 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+            <div className="mt-4 rounded-md border border-slate-200 dark:border-brand-border bg-slate-50 dark:bg-brand-surface/60 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
               <svg width="18" height="18" viewBox="0 0 24 24" className="mt-0.5 fill-slate-500 dark:fill-slate-400" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z"/></svg>
               <div className="flex-1">
                 Tip: Dari bilah alamat browser, ketik alamat situs lalu tekan Tab untuk mencari cepat. Contoh: ketik &quot;3&quot; untuk melihat semua yang mengandung 3, atau ketik &quot;BN 57&quot; untuk langsung ke lagu.
               </div>
               <button
                 type="button"
-                className="ml-2 rounded p-1 hover:bg-slate-200 dark:hover:bg-slate-800"
+                className="ml-2 rounded p-1 hover:bg-slate-200 dark:hover:bg-brand-hover"
                 aria-label="Tutup petunjuk"
                 onClick={() => { try { localStorage.setItem('dismissOmniboxHint','1'); } catch {}; setShowOmniboxHint(false); }}
               >
@@ -141,7 +141,7 @@ export default function HomePage() {
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? song.name}`}
                       >
-                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
+                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-brand-surface/50 dark:border-brand-border-strong hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
                           <span className={`font-semibold block uppercase break-words ${selectedBook === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} min-h-10 md:min-h-10 leading-snug`}>
                             {titles[`${song.type}/${song.name}`] ?? song.name}
                           </span>

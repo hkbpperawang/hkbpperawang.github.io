@@ -46,7 +46,7 @@ export function SearchBox() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label="Buka pencarian"
         title="Cari"
       >
@@ -233,9 +233,9 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   return (
     <div
       ref={ref}
-      className="absolute right-0 mt-2 w-[28rem] max-w-[90vw] rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg z-50 grid grid-rows-[auto,1fr,auto]"
+  className="absolute right-0 mt-2 w-[28rem] max-w-[90vw] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg z-50 grid grid-rows-[auto,1fr,auto]"
     >
-      <div className="p-3 border-b border-gray-100 dark:border-gray-800">
+  <div className="p-3 border-b border-gray-100 dark:border-brand-border">
         <input
           autoFocus
           type="search"
@@ -243,7 +243,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
           onChange={(e) => { onChange(e.target.value); setActiveIndex(0); }}
           onKeyDown={onKeyDownInput}
           placeholder={loading ? 'Memuat nomor…' : 'Ketik nomor (mis. 57), BE/BN, atau kata kunci'}
-          className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 rounded-md border border-gray-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Ketik kata yang ingin dicari"
         />
       </div>
@@ -266,12 +266,12 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
         )}
       </div>
 
-      <div className="sticky bottom-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur px-3 py-2 flex items-center justify-between gap-2 border-t border-gray-100 dark:border-gray-800">
+  <div className="sticky bottom-0 bg-white/90 dark:bg-brand-surface/90 backdrop-blur px-3 py-2 flex items-center justify-between gap-2 border-t border-gray-100 dark:border-brand-border">
         <span className="text-xs text-gray-500 dark:text-gray-400">Esc untuk menutup</span>
         <div className="flex items-center gap-2">
           <a
             href={`/search?q=${encodeURIComponent(value)}`}
-            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-brand-border-strong hover:bg-gray-100 dark:hover:bg-brand-hover"
           >
             Lihat semua hasil
           </a>
@@ -286,7 +286,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
 
 function SuggestionRow({ s, active, id, query, onHover, onApply }:{ s: Suggestion; active: boolean; id: string; query: string; onHover: () => void; onApply: () => void }) {
   const base = "cursor-pointer px-3 py-2 text-sm flex items-center gap-2";
-  const activeCls = active ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-slate-50 dark:hover:bg-slate-800/70';
+  const activeCls = active ? 'bg-slate-100 dark:bg-brand-hover' : 'hover:bg-slate-50 dark:hover:bg-brand-hover/70';
   const label = s.label;
   const q = query.trim();
   function escapeRegex(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }

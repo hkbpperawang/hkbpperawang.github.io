@@ -12,3 +12,6 @@ html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; 
 @import "tailwindcss";
 
 /* You can add custom base styles here if needed */
+
+/* (Opsional) utilitas komponen berbasis @apply dibatalkan sementara karena parser CSS di editor menandai @apply sebagai unknown. 
+  Kita sudah migrasikan palet ke token Tailwind sehingga konsistensi tetap terjaga tanpa utilitas khusus. */
