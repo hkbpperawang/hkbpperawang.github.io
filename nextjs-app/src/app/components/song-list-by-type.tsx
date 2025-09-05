@@ -81,12 +81,17 @@ export function SongListByType({ type }: { type: Book }) {
                         key={song.path}
                         href={`/songs/${song.type}/${song.name}`}
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
-                        aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? song.name}`}
+                        aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? `Nomor ${song.name}`}`}
                       >
                         <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-gray-800/50 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer ${type === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
-                          <span className={`font-semibold block uppercase break-words ${type === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} min-h-10 md:min-h-10 leading-snug`}>
-                            {titles[`${song.type}/${song.name}`] ?? song.name}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className={`font-semibold block uppercase break-words ${type === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} leading-snug`}>
+                              {titles[`${song.type}/${song.name}`] ?? ''}
+                            </span>
+                            <span className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                              {song.type.toUpperCase()} {song.name}
+                            </span>
+                          </div>
                         </div>
                       </Link>
                     ))}
