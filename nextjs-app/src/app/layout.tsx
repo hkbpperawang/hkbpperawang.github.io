@@ -36,15 +36,22 @@ export default function RootLayout({
                   <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded" />
                   <h1 className="text-lg font-semibold">BE dan BN HKBP</h1>
                 </div>
-                <div className="justify-self-center w-full flex items-center justify-center">
+                <div className="hidden md:block" />
+                <div className="justify-self-end flex items-center gap-1">
                   <SearchBox />
-                </div>
-                <div className="justify-self-end">
                   <ThemeSwitcher />
                 </div>
               </div>
             </header>
             <main>{children}</main>
+            <footer className="mt-8 border-t border-gray-200 dark:border-gray-800">
+              <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <p>© 2024–{new Date().getFullYear()} HKBP Perawang.</p>
+                <p>
+                  Dibuat oleh <a className="underline hover:text-gray-900 dark:hover:text-gray-200" href="https://wwwhkbpperawang.org" target="_blank" rel="noopener noreferrer">Tim Multimedia HKBP Perawang</a>
+                </p>
+              </div>
+            </footer>
           </div>
         </ThemeProvider>
   {/* Vercel Speed Insights */}
