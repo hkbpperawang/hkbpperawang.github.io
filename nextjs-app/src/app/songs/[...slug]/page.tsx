@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 // == DATA FETCHING FUNCTIONS ==
@@ -136,4 +137,40 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
       </div>
     </main>
   );
+}
+
+// Metadata dinamis per lagu
+export async function generateMetadata(
+  { params }: { params: Promise<SongParams> }
+): Promise<Metadata> {
+  const { slug } = await params;
+  const [type, name] = slug || [];
+  if (!type || !name) return { title: 'Nyanyian HKBP Perawang' };
+
+  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  let titleText = `${type.toUpperCase()} ${name}`;
+  try {
+    const res = await fetch(`${baseUrl}/api/titles?type=${type}`, { next: { revalidate: 900 } });
+    if (res.ok) {
+      const data = await res.json() as { titles: { name: string; type: 'be'|'bn'; title: string }[] };
+      const found = data.titles.find(t => t.name === name);
+      if (found?.title) titleText = `${found.title} — ${type.toUpperCase()} ${name}`;
+    }
+  } catch {}
+
+  const fullTitle = `${titleText} — Nyanyian HKBP Perawang`;
+  const description = `Lagu ${type.toUpperCase()} ${name} — lirik lengkap dari Nyanyian HKBP Perawang.`;
+
+  return {
+    title: fullTitle,
+    description,
+    alternates: { canonical: `/songs/${type}/${name}` },
+    openGraph: {
+      title: fullTitle,
+      description,
+      images: ['/HKBP_512.png'],
+      type: 'article',
+    },
+    twitter: { card: 'summary', title: fullTitle, description, images: ['/HKBP_512.png'] },
+  };
 }

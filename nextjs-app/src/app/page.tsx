@@ -15,6 +15,15 @@ export default function HomePage() {
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [selectedBook, setSelectedBook] = useState('be');
   const selectedBookTyped = (selectedBook as 'be'|'bn');
+  const [showOmniboxHint, setShowOmniboxHint] = useState(false);
+
+  // Tampilkan hint Tab-to-search sekali saja (bisa ditutup)
+  useEffect(() => {
+    try {
+      const dismissed = localStorage.getItem('dismissOmniboxHint');
+      setShowOmniboxHint(dismissed !== '1');
+    } catch {}
+  }, []);
 
   // Fetch songs on the client side
   useEffect(() => {
@@ -99,6 +108,22 @@ export default function HomePage() {
               />
             </div>
           </div>
+          {showOmniboxHint && (
+            <div className="mt-4 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" className="mt-0.5 fill-slate-500 dark:fill-slate-400" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z"/></svg>
+              <div className="flex-1">
+                Tip: Dari bilah alamat browser, ketik alamat situs lalu tekan Tab untuk mencari cepat. Contoh: ketik &quot;3&quot; untuk melihat semua yang mengandung 3, atau ketik &quot;BN 57&quot; untuk langsung ke lagu.
+              </div>
+              <button
+                type="button"
+                className="ml-2 rounded p-1 hover:bg-slate-200 dark:hover:bg-slate-800"
+                aria-label="Tutup petunjuk"
+                onClick={() => { try { localStorage.setItem('dismissOmniboxHint','1'); } catch {}; setShowOmniboxHint(false); }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" className="fill-slate-600 dark:fill-slate-300" aria-hidden="true"><path d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.42L12 13.41l4.89 4.9a1 1 0 001.42-1.41L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {loading ? (

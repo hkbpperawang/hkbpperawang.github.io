@@ -11,6 +11,26 @@ export function SearchBox() {
   const [searching, setSearching] = React.useState(false);
   const router = useRouter();
 
+  // Shortcut "/" untuk membuka pencarian (abaikan saat sedang mengetik di input lain)
+  React.useEffect(() => {
+    function isEditableTarget(t: EventTarget | null) {
+      if (!(t instanceof HTMLElement)) return false;
+      const tag = t.tagName.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+      if (t.isContentEditable) return true;
+      return false;
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (isEditableTarget(e.target)) return;
+      e.preventDefault();
+      setQ('');
+      setOpen(true);
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   const goSearch = React.useCallback(() => {
     const query = q.trim();
     if (!query) return;

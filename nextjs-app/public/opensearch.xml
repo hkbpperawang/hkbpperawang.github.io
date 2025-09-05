@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Nyanyian HKBP</ShortName>
+  <Description>Cari lagu BE/BN HKBP Perawang</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image height="64" width="64" type="image/png">/HKBP_512.png</Image>
+  <Url type="text/html" method="get" template="/search?q={searchTerms}" />
+  <Url type="application/x-suggestions+json" method="get" template="/api/search/suggest?q={searchTerms}" />
+</OpenSearchDescription>

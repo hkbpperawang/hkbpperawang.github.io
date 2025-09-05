@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/app/components/theme-provider";
 import ThemeSwitcher from "@/app/components/theme-switcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import Image from "next/image";
+import Link from "next/link";
 import { SearchBox } from "@/app/components/search-box";
 
-const inter = Inter({ subsets: ["latin"] });
+// font default dari Tailwind digunakan, Inter tidak dipakai
 
 export const metadata: Metadata = {
   title: "Nyanyian HKBP Perawang",
@@ -35,37 +35,17 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
-        {/* Tetapkan tema sedini mungkin, sebelum CSS dirender */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-(function() {
-  try {
-    var stored = localStorage.getItem('theme');
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var isDark = stored ? stored === 'dark' : prefersDark;
-    var root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
-    }
-  } catch(e) {}
-})();`,
-          }}
-        />
+        <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Nyanyian HKBP" />
       </head>
       <body className="min-h-dvh bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         <ThemeProvider>
           <div className="relative min-h-screen">
             <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-gray-950/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-gray-950/50 border-white/20 dark:border-white/10">
               <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden">
-                  <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded" />
-                  <h1 className="text-lg font-semibold truncate">BE dan BN HKBP</h1>
-                </div>
+                <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
+                  <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />
+                  <h1 className="text-lg font-semibold truncate group-hover:underline">BE dan BN HKBP</h1>
+                </Link>
                 <div className="flex items-center gap-1 whitespace-nowrap">
                   <SearchBox />
                   <ThemeSwitcher />
