@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/app/components/theme-provider";
-import { ThemeSwitcher } from "@/app/components/theme-switcher";
+import ThemeSwitcher from "@/app/components/theme-switcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import Image from "next/image";
@@ -33,9 +33,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <html lang="en" suppressHydrationWarning>
-      <head />
-  <body className={`${inter.className} bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100`}>
+    <html lang="id" suppressHydrationWarning>
+      <head>
+        {/* Tetapkan tema sedini mungkin, sebelum CSS dirender */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+(function() {
+  try {
+    var stored = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = stored ? stored === 'dark' : prefersDark;
+    var root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    }
+  } catch(e) {}
+})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-dvh bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         <ThemeProvider>
           <div className="relative min-h-screen">
             <header className="sticky top-0 z-20 border-b shadow-sm bg-white/60 dark:bg-gray-950/60 backdrop-blur-md supports-[backdrop-filter]:bg-white/50 supports-[backdrop-filter]:dark:bg-gray-950/50 border-white/20 dark:border-white/10">
