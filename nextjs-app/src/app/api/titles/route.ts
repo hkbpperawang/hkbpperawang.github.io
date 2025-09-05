@@ -73,9 +73,10 @@ async function fetchTitle(type: 'be' | 'bn', path: string): Promise<string> {
 
   const data = await res.json();
   const content = Buffer.from(data.content, 'base64').toString('utf-8');
-  const json = JSON.parse(content) as { judul?: string };
-  if (!json.judul) return '';
-  return cleanJudul(type, json.judul);
+  const json = JSON.parse(content) as { judul?: string; judul_asli?: string };
+  if (json.judul) return cleanJudul(type, json.judul);
+  if (json.judul_asli) return json.judul_asli;
+  return '';
 }
 
 export async function GET(req: Request) {

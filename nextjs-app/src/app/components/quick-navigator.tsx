@@ -25,7 +25,7 @@ export function QuickNavigator({
 
   const [loading, setLoading] = React.useState(true);
   const [bookState, setBookState] = React.useState<'be' | 'bn'>(() => {
-    const m = pathname?.match(/\/songs\/(be|bn)\//);
+  const m = pathname?.match(/\/songs\/(be|bn)(?:\/(?:$|\d+))?/);
     return (m?.[1] as 'be' | 'bn') ?? 'be';
   });
   const book = controlledBook ?? bookState;

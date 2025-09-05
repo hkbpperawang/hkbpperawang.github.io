@@ -24,7 +24,7 @@ interface SongData {
 
 async function getAllSongs(): Promise<SongInfo[]> {
   const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 900 } });
   if (!res.ok) return [];
   const data = await res.json();
   return data.songs;
@@ -48,7 +48,7 @@ async function getSongContent(type: string, fileNameNoExt: string): Promise<Song
       'X-GitHub-Api-Version': '2022-11-28',
       'User-Agent': 'HKBP-Perawang-App'
     },
-    next: { revalidate: 3600 },
+  next: { revalidate: 900 },
   });
 
   if (res.status === 404) notFound();
@@ -112,7 +112,7 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
         </nav>
 
         <header className="text-center border-b dark:border-gray-700 pb-6 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul || song.judul_asli || ''}</h1>
           {type === 'bn' && song.judul_asli ? (
             <p className="mt-2 text-base md:text-lg text-gray-600 dark:text-gray-300">{song.judul_asli}</p>
           ) : null}

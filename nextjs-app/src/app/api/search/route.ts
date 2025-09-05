@@ -64,9 +64,9 @@ export async function GET(req: Request) {
       const chunk = allFiles.slice(i, i + CONCURRENCY);
       const res = await Promise.all(chunk.map(async (f) => {
         const type = f.path.startsWith('be/') ? 'be' as const : 'bn' as const;
-        const json = await fetchJson(f.path);
-        const name = f.name.replace(/\.json$/i, '');
-        const title = json.judul ? cleanJudul(type, json.judul) : name;
+  const json = await fetchJson(f.path);
+  const name = f.name.replace(/\.json$/i, '');
+  const title = json.judul ? cleanJudul(type, json.judul) : (json.judul_asli || name);
         const haystack = [json.judul, json.judul_asli, ...(json.bait?.flatMap(b => b.baris || []) || [])]
           .filter(Boolean)
           .join('\n');
