@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 // == DATA FETCHING FUNCTIONS ==
-// Note: In a larger app, these would be in a separate lib/data.ts file.
 
 interface SongInfo {
   name: string;
@@ -55,8 +54,16 @@ async function getSongContent(type: string, fileName: string): Promise<SongData>
 
 // == THE PAGE COMPONENT ==
 
-export default async function SongPage({ params }: { params: { slug: string[] } }) {
-  const [type, fileName] = params.slug;
+// Define a specific type for the page props for better type safety
+type SongPageProps = {
+  params: { 
+    slug: string[]; 
+  };
+};
+
+export default async function SongPage({ params }: SongPageProps) {
+  const { slug } = params;
+  const [type, fileName] = slug;
   if (!type || !fileName) notFound();
 
   const [song, allSongs] = await Promise.all([
