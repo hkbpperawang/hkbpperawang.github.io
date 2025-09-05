@@ -54,12 +54,13 @@ async function getSongContent(type: string, fileName: string): Promise<SongData>
 
 // == THE PAGE COMPONENT ==
 
-// Next.js 15: params is a Promise in PageProps. Await it before use.
-type SongPageProps = {
-  params: Promise<{ slug: string[] }>;
+// Define a specific type for the page params for better type safety
+type SongParams = {
+  slug: string[];
 };
 
-export default async function SongPage({ params }: SongPageProps) {
+// In Next.js 15, `params` is provided as a Promise in App Router page components
+export default async function SongPage({ params }: { params: Promise<SongParams> }) {
   const { slug } = await params;
   const [type, fileName] = slug;
   if (!type || !fileName) notFound();
