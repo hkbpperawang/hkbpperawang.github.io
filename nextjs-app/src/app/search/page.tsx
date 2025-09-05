@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LinkButton } from '@/app/components/ui/link-button';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 
@@ -30,7 +31,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Hasil Pencarian</h1>
-          <Link href="/" className="text-sm px-3 py-2 rounded-md border border-gray-300 dark:border-brand-border-strong hover:bg-gray-100 dark:hover:bg-brand-hover">Kembali</Link>
+          <LinkButton href="/" variant="outline" size="sm">Kembali</LinkButton>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Kata kunci: <span className="font-semibold">{q}</span></p>
         {errorMsg ? (

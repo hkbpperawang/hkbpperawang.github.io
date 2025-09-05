@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Card } from '@/app/components/ui/card';
 import { QuickNavigator } from '@/app/components/quick-navigator';
 
 // Interface for song data
@@ -141,11 +142,11 @@ export default function HomePage() {
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? song.name}`}
                       >
-                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-brand-surface/50 dark:border-brand-border-strong hover:shadow-md transition-all cursor-pointer ${selectedBook === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
+                        <Card variant={selectedBook === 'be' ? 'be' : 'bn'}>
                           <span className={`font-semibold block uppercase break-words ${selectedBook === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} min-h-10 md:min-h-10 leading-snug`}>
                             {titles[`${song.type}/${song.name}`] ?? song.name}
                           </span>
-                        </div>
+                        </Card>
                       </Link>
                     ))}
                   </div>

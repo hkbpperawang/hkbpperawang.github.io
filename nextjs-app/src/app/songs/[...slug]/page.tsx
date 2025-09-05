@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LinkButton } from '@/app/components/ui/link-button';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -20,6 +21,7 @@ interface Bait {
 interface SongData {
   judul: string;
   judul_asli?: string;
+  nada_dasar?: string;
   bait: Bait[];
 }
 
@@ -100,14 +102,10 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
           </Link>
           <div className="flex items-center space-x-2">
             {prevSong ? (
-              <Link href={`/songs/${prevSong.type}/${prevSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-brand-surface rounded-md hover:bg-gray-200 dark:hover:bg-brand-hover text-gray-800 dark:text-gray-200 transition-colors">
-                &larr; {prevSong.name}
-              </Link>
+              <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`}>&larr; {prevSong.name}</LinkButton>
             ) : <div className="px-4 py-2 invisible"></div>}
             {nextSong ? (
-              <Link href={`/songs/${nextSong.type}/${nextSong.name}`} className="px-4 py-2 bg-gray-100 dark:bg-brand-surface rounded-md hover:bg-gray-200 dark:hover:bg-brand-hover text-gray-800 dark:text-gray-200 transition-colors">
-                {nextSong.name} &rarr;
-              </Link>
+              <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`}>{nextSong.name} &rarr;</LinkButton>
             ) : <div className="px-4 py-2 invisible"></div>}
           </div>
         </nav>
@@ -117,6 +115,18 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
           {type === 'bn' && song.judul_asli ? (
             <p className="mt-2 text-base md:text-lg text-gray-600 dark:text-gray-300">{song.judul_asli}</p>
           ) : null}
+          {(() => { const nd = (song.nada_dasar || '').trim(); return nd ? (
+            <div className="mt-2">
+              <span
+                className="inline-block rounded px-2 py-0.5 text-xs font-medium
+                           bg-slate-100 text-slate-700 border border-slate-200
+                           dark:bg-brand-surface/80 dark:text-slate-100 dark:border-brand-border"
+                aria-label="Nada dasar"
+              >
+        {nd}
+              </span>
+            </div>
+      ) : null; })()}
         </header>
 
         <div className="max-w-2xl mx-auto">

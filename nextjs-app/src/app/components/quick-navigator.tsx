@@ -121,7 +121,7 @@ export function QuickNavigator({
           placeholder={loading ? 'Memuat…' : `Nomor ${book.toUpperCase()}…`}
           className="w-40 md:w-48 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm
                      focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-brand-border-strong
-                     dark:bg-[#0f0e2c] dark:text-slate-100"
+                     dark:bg-brand-surface dark:text-slate-100"
           value={input}
           onChange={(e) => { setInput(e.target.value.replace(/[^\d]/g, '')); setOpen(true); }}
           onFocus={() => setOpen(true)}

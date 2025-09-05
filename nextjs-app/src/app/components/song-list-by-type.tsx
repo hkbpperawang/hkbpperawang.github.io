@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Card } from '@/app/components/ui/card';
 import { QuickNavigator } from '@/app/components/quick-navigator';
 
 type Book = 'be' | 'bn';
@@ -83,7 +84,7 @@ export function SongListByType({ type }: { type: Book }) {
                         className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? `Nomor ${song.name}`}`}
                       >
-                        <div className={`w-full p-3 md:p-3.5 border rounded-md text-left bg-white dark:bg-[#0f0e2c]/50 dark:border-[#2b2966] hover:shadow-md transition-all cursor-pointer ${type === 'be' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : 'hover:bg-green-100 dark:hover:bg-green-900/30'}`}>
+                        <Card variant={type}>
                           <div className="flex flex-col">
                             <span className={`font-semibold block uppercase break-words ${type === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} leading-snug`}>
                               {titles[`${song.type}/${song.name}`] ?? ''}
@@ -92,7 +93,7 @@ export function SongListByType({ type }: { type: Book }) {
                               {song.type.toUpperCase()} {song.name}
                             </span>
                           </div>
-                        </div>
+                        </Card>
                       </Link>
                     ))}
                   </div>

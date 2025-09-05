@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
+  // Hilangkan peringatan "inferred your workspace root" pada struktur nested app/monorepo
+  // Arahkan tracing ke root repo agar dependensi/artefak terdeteksi akurat
+  outputFileTracingRoot: path.join(process.cwd(), ".."),
   async redirects() {
     return [
       // Normalisasi trailing slash untuk rute BE/BN (tanpa mengganggu nomor lagu)
