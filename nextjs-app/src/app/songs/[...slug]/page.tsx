@@ -10,11 +10,16 @@ interface SongInfo {
   type: string;
 }
 
+interface Bait {
+  type: 'bait' | 'reff';
+  label: string | null;
+  bait_no: string | null;
+  baris: string[];
+}
+
 interface SongData {
-  title: string;
-  lyrics: Array<{ verse: number | string; text: string; }>;
-  // Adding a flexible index signature to handle different possible structures
-  [key: string]: any;
+  judul: string;
+  bait: Bait[];
 }
 
 async function getAllSongs(): Promise<SongInfo[]> {
@@ -59,9 +64,6 @@ export default async function SongPage({ params }: { params: { slug: string[] } 
     getAllSongs(),
   ]);
 
-  // DEBUGGING: Log the received song structure to the server terminal
-  console.log('Song data received:', JSON.stringify(song, null, 2));
-
   const bookSongs = allSongs
     .filter(s => s.type === type)
     .sort((a, b) => parseInt(a.name) - parseInt(b.name));
@@ -70,52 +72,44 @@ export default async function SongPage({ params }: { params: { slug: string[] } 
   const prevSong = currentIndex > 0 ? bookSongs[currentIndex - 1] : null;
   const nextSong = currentIndex < bookSongs.length - 1 ? bookSongs[currentIndex + 1] : null;
 
-  const songNumber = fileName.replace('.json', '');
-  
-  // Defensive check for lyrics property
-  const lyrics = song.lyrics || song.verses || song.lirik || [];
-
   return (
-    <main className="bg-white min-h-screen">
+    <main className="bg-white dark:bg-gray-950 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         
         <nav className="flex justify-between items-center mb-6 text-sm">
-          <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
+          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
             &larr; Daftar Lagu
           </Link>
           <div className="flex items-center space-x-2">
             {prevSong ? (
-              <Link href={`/songs/${prevSong.path}`} className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+              <Link href={`/songs/${prevSong.path}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
                 &larr; {prevSong.name}
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}
             {nextSong ? (
-              <Link href={`/songs/${nextSong.path}`} className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+              <Link href={`/songs/${nextSong.path}`} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors">
                 {nextSong.name} &rarr;
               </Link>
             ) : <div className="px-4 py-2 invisible"></div>}
           </div>
         </nav>
 
-        <header className="text-center border-b pb-6 mb-8">
-          <p className="text-lg font-semibold text-gray-500">{type.toUpperCase()} {songNumber}</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-1">{song.title || 'Judul tidak ditemukan'}</h1>
+        <header className="text-center border-b dark:border-gray-700 pb-6 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul}</h1>
         </header>
 
         <div className="max-w-2xl mx-auto">
-          <div className="space-y-8">
-            {Array.isArray(lyrics) && lyrics.length > 0 ? (
-              lyrics.map((lyric, index) => (
-                <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
-                  <p className="font-bold text-gray-800 text-lg pt-1">{lyric.verse || lyric.number}</p>
-                  <p className="text-xl text-gray-800 whitespace-pre-line leading-relaxed">
-                    {lyric.text || 'Teks tidak ditemukan'}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500">Lirik untuk lagu ini tidak tersedia.</p>
-            )}
+          <div className="space-y-6">
+            {song.bait.map((b, index) => (
+              <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
+                <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>
+                  {b.type === 'reff' ? b.label : b.bait_no}
+                </p>
+                <p className={`text-xl whitespace-pre-line leading-relaxed ${b.type === 'reff' ? 'italic text-gray-700 dark:text-gray-300' : 'text-gray-800 dark:text-gray-200'}`}>
+                  {b.baris.join('\n')}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
