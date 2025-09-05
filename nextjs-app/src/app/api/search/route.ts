@@ -80,8 +80,11 @@ export async function GET(req: Request) {
       hits.push(...res.filter(Boolean) as SearchHit[]);
     }
 
-    // Batasi hasil agar respons cepat
-    return NextResponse.json({ results: hits.slice(0, 50) });
+  // Batasi hasil agar respons cepat
+  const res = NextResponse.json({ results: hits.slice(0, 50) });
+  // Cache publik 1 bulan dengan revalidate di edge
+  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  return res;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unknown error';
     return NextResponse.json({ message }, { status: 500 });

@@ -114,7 +114,9 @@ export async function GET(req: Request) {
     // Urutkan berdasarkan nomor
     items.sort((a, b) => parseInt(a.name) - parseInt(b.name));
 
-    return NextResponse.json({ titles: items }, { status: 200 });
+  const res = NextResponse.json({ titles: items }, { status: 200 });
+  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  return res;
   } catch (err) {
     let message = 'Unknown error';
     if (err instanceof Error) message = err.message;

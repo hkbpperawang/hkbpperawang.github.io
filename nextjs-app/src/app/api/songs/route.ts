@@ -55,7 +55,9 @@ export async function GET() {
 
     const allSongs = [...beFiles, ...bnFiles];
 
-    return NextResponse.json({ songs: allSongs });
+  const res = NextResponse.json({ songs: allSongs });
+  res.headers.set('Cache-Control', 'public, s-maxage=2592000, max-age=86400, stale-while-revalidate=86400');
+  return res;
   } catch (error) {
     // Handle the error type safely without using 'any'
     let errorMessage = 'An unknown error occurred.';

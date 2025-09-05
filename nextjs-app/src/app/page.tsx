@@ -17,7 +17,7 @@ export default function HomePage() {
   useEffect(() => {
     setLoading(true);
     // Ambil daftar file
-    fetch('/api/songs')
+  fetch('/api/songs')
       .then(res => res.json())
       .then(data => {
         setSongs(data.songs);
@@ -32,7 +32,7 @@ export default function HomePage() {
   // Fetch judul bersih per buku saat buku berubah
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/titles?type=${selectedBook}`)
+  fetch(`/api/titles?type=${selectedBook}`)
       .then(res => res.json())
       .then((data: { titles: TitleItem[] }) => {
         const map: Record<string, string> = {};
