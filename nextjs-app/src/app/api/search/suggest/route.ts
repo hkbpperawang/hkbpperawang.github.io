@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { fetchJson } from '@/app/lib/fetch-json';
+
+export const runtime = 'edge';
 
 // Format OpenSearch Suggestions: [query, suggestions[], descriptions[], urls[]]
 export async function GET(req: Request) {
@@ -22,15 +25,14 @@ export async function GET(req: Request) {
     let songMap: Record<'be'|'bn', string[]> | null = null;
     async function ensureSongs() {
       if (songMap) return;
-      const r = await fetch(`${base}/api/songs`, { cache: 'no-store' });
-      if (r.ok) {
-        const data = await r.json() as { songs: { type: 'be'|'bn'; name: string }[] };
+      try {
+        const data = await fetchJson<{ songs: { type: 'be'|'bn'; name: string }[] }>(`${base}/api/songs`, { timeoutMs: 6000, retries: 1 });
         const grouped: Record<'be'|'bn', string[]> = { be: [], bn: [] };
         for (const s of data.songs) grouped[s.type].push(s.name);
         grouped.be.sort((a,b)=>parseInt(a)-parseInt(b));
         grouped.bn.sort((a,b)=>parseInt(a)-parseInt(b));
         songMap = grouped;
-      } else {
+      } catch {
         songMap = { be: [], bn: [] };
       }
     }
