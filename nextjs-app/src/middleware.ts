@@ -27,13 +27,19 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // 3) Compact alias: /be57 atau /BN288 -> redirect ke /songs/<book>/<num>
+  const mCompact = pathname.match(/^\/(BE|BN|be|bn)(\d+)\/?$/);
+  if (mCompact) {
+    const book = mCompact[1].toLowerCase();
+    const num = mCompact[2];
+    url.pathname = `/songs/${book}/${num}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    '/songs/:path*',
-    '/be', '/BE', '/bn', '/BN',
-    '/be/:path*', '/BE/:path*', '/bn/:path*', '/BN/:path*',
-  ],
+  // Gunakan matcher global agar pola /be57 juga tertangkap.
+  matcher: ['/:path*'],
 };
