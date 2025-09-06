@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LinkButton } from '@/app/components/ui/link-button';
+import { SongSidebar } from '@/app/components/song-sidebar';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -95,6 +96,8 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
   return (
   <main className="bg-white dark:bg-brand-base min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Sidebar trigger */}
+  <SongSidebar type={type as 'be'|'bn'} />
         
         <nav className="flex justify-between items-center mb-6 text-sm">
           <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -145,9 +148,22 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
         </div>
 
       </div>
+      {/* Navigasi bawah */}
+      <div className="border-t dark:border-brand-border mt-8">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between text-sm">
+          {prevSong ? (
+            <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`}>&larr; {prevSong.name}</LinkButton>
+          ) : <span />}
+          {nextSong ? (
+            <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`}>{nextSong.name} &rarr;</LinkButton>
+          ) : <span />}
+        </div>
+      </div>
     </main>
   );
 }
+
+// SongSidebar dipindahkan ke komponen client terpisah
 
 // Metadata dinamis per lagu
 export async function generateMetadata(

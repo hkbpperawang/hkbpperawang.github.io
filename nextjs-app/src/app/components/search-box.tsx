@@ -232,9 +232,15 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   const listboxId = React.useId();
   return (
     <div
-      ref={ref}
-  className="absolute right-0 mt-2 w-[28rem] max-w-[90vw] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg z-50 grid grid-rows-[auto,1fr,auto]"
+      className="
+        fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20
+        sm:absolute sm:right-0 sm:top-auto sm:inset-auto sm:mt-2 sm:p-0 sm:bg-transparent sm:z-50 sm:flex-none
+      "
     >
+      <div
+        ref={ref}
+        className="w-full max-w-md sm:max-w-[90vw] sm:w-[28rem] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg grid grid-rows-[auto,1fr,auto]"
+      >
   <div className="p-3 border-b border-gray-100 dark:border-brand-border">
         <input
           autoFocus
@@ -248,7 +254,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
         />
       </div>
 
-      <div id={listboxId} className="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+  <div id={listboxId} className="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
         {suggestions.map((s, idx) => (
           <SuggestionRow key={idx} id={`${listboxId}-opt-${idx}`} s={s} query={value} active={idx===activeIndex} onHover={() => setActiveIndex(idx)} onApply={() => {
             if (s.kind === 'token') onChange(s.apply);
@@ -279,6 +285,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
             {searching ? 'Mencari…' : 'Cari'}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
