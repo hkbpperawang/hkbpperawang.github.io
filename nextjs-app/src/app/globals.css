@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 /* Definisi token warna kustom Tailwind v4 */
+/* stylelint-disable at-rule-no-unknown */
 @theme {
   --color-brand-base: #17153B;          /* background dasar (dark) */
   --color-brand-surface: #0f0e2c;       /* permukaan/kartu/input (dark) */
@@ -8,6 +9,7 @@
   --color-brand-border: #23215a;        /* border halus (dark) */
   --color-brand-border-strong: #2b2966; /* border tebal (dark) */
 }
+/* stylelint-enable at-rule-no-unknown */
 
 html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 @media (prefers-reduced-motion: no-preference) {
@@ -19,3 +21,8 @@ html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; 
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up { animation: fade-in-up 140ms ease-out; }
+
+/* Utilitas untuk menghindari inline style pada safe-area bottom */
+.pb-safe-bottom {
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
