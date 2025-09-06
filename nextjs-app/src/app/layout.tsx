@@ -16,11 +16,12 @@ export const metadata: Metadata = {
   description: "Buku Ende dan Buku Nyanyian HKBP oleh Tim Digital HKBP Perawang",
   icons: {
     icon: [
-      { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/HKBP_512.png", type: "image/png", sizes: "512x512" },
+  { url: "/HKBP_512.png", type: "image/png", sizes: "32x32" },
+  { url: "/HKBP_512.png", type: "image/png", sizes: "192x192" },
+  { url: "/HKBP_512.png", type: "image/png", sizes: "512x512" },
     ],
     shortcut: [
-      "/HKBP_512.png",
+  "/HKBP_512.png",
     ],
     apple: [
       { url: "/HKBP_512.png", type: "image/png", sizes: "180x180" },
@@ -37,6 +38,11 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <head>
         <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Nyanyian HKBP" />
+  {/* Force favicon to HKBP_512.png and bust old caches */}
+  <link rel="icon" href="/HKBP_512.png?v=2" sizes="32x32" type="image/png" />
+  <link rel="icon" href="/HKBP_512.png?v=2" sizes="192x192" type="image/png" />
+  <link rel="icon" href="/HKBP_512.png?v=2" sizes="512x512" type="image/png" />
+  <link rel="apple-touch-icon" href="/HKBP_512.png?v=2" sizes="180x180" />
       </head>
   <body className="min-h-dvh bg-white text-slate-900 dark:bg-brand-base dark:text-slate-100">
         <ThemeProvider>
