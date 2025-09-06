@@ -87,6 +87,9 @@ export async function GET(req: Request) {
   return res;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unknown error';
-    return NextResponse.json({ message }, { status: 500 });
+    console.warn('[api/search] fallback kosong:', message);
+    const res = NextResponse.json({ results: [] }, { status: 200 });
+    res.headers.set('Cache-Control', 'no-store');
+    return res;
   }
 }

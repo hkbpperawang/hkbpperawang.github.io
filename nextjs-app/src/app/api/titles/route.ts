@@ -123,6 +123,9 @@ export async function GET(req: Request) {
   } catch (err) {
     let message = 'Unknown error';
     if (err instanceof Error) message = err.message;
-    return NextResponse.json({ message }, { status: 500 });
+    console.warn('[api/titles] fallback kosong:', message);
+    const res = NextResponse.json({ titles: [] }, { status: 200 });
+    res.headers.set('Cache-Control', 'no-store');
+    return res;
   }
 }

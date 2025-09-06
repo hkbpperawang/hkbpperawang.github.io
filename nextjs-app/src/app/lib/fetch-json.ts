@@ -12,7 +12,12 @@ export async function fetchJson<T>(url: string, opts: FetchJsonOptions = {}): Pr
     const ac = new AbortController();
     const timer = setTimeout(() => ac.abort(), timeoutMs);
     try {
-      const res = await fetch(url, { ...init, signal: ac.signal, cache: 'no-store' });
+      const reqInit: RequestInit = { ...init, signal: ac.signal };
+      // Jika caller belum set cache, gunakan no-store agar tidak menggantung; biarkan caller override
+      if (!init || (init && !("cache" in init))) {
+        (reqInit as unknown as Record<string, unknown>).cache = 'no-store';
+      }
+      const res = await fetch(url, reqInit);
       clearTimeout(timer);
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       return (await res.json()) as T;

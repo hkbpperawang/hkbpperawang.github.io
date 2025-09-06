@@ -61,15 +61,11 @@ export async function GET() {
   res.headers.set('Cache-Control', 'public, s-maxage=1800, max-age=300, stale-while-revalidate=900');
   return res;
   } catch (error) {
-    // Handle the error type safely without using 'any'
-    let errorMessage = 'An unknown error occurred.';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    console.error(errorMessage);
-    return new NextResponse(
-      JSON.stringify({ message: 'Failed to fetch song data from source.' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    let errorMessage = 'Unknown error';
+    if (error instanceof Error) errorMessage = error.message;
+    console.warn('[api/songs] fallback kosong:', errorMessage);
+    const res = NextResponse.json({ songs: [] }, { status: 200 });
+    res.headers.set('Cache-Control', 'no-store');
+    return res;
   }
 }
