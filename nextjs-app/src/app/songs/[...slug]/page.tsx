@@ -76,7 +76,8 @@ type SongParams = {
 // In Next.js 15, `params` is provided as a Promise in App Router page components
 export default async function SongPage({ params }: { params: Promise<SongParams> }) {
   const { slug } = await params;
-  const [type, fileName] = slug;
+  const [typeRaw, fileName] = slug;
+  const type = (typeRaw || '').toLowerCase();
   if (!type || !fileName) notFound();
 
   const [song, allSongs] = await Promise.all([
@@ -170,7 +171,8 @@ export async function generateMetadata(
   { params }: { params: Promise<SongParams> }
 ): Promise<Metadata> {
   const { slug } = await params;
-  const [type, name] = slug || [];
+  const [typeRaw, name] = slug || [];
+  const type = (typeRaw || '').toLowerCase();
   if (!type || !name) return { title: 'Nyanyian HKBP Perawang' };
 
   const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';

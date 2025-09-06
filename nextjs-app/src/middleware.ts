@@ -2,22 +2,38 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  // Cocokkan /songs/<book>/<num> di mana <book> bisa huruf besar/kecil
-  const m = pathname.match(/^\/songs\/(BE|BN|be|bn)\/(\d+)(?:\/?|$)/);
-  if (m) {
-    const book = m[1].toLowerCase();
-    const num = m[2];
-    const canonical = `/songs/${book}/${num}`;
+  const url = req.nextUrl.clone();
+  const { pathname } = url;
+
+  // 1) Normalisasi case untuk /songs/<book> dan /songs/<book>/<num>
+  const mSongs = pathname.match(/^\/songs\/(BE|BN|be|bn)(?:\/(\d+))?\/?$/);
+  if (mSongs) {
+    const book = mSongs[1].toLowerCase();
+    const num = mSongs[2];
+    const canonical = num ? `/songs/${book}/${num}` : `/songs/${book}`;
     if (pathname !== canonical) {
-      const url = req.nextUrl.clone();
       url.pathname = canonical;
       return NextResponse.redirect(url, 308);
     }
+    return NextResponse.next();
   }
+
+  // 2) Short alias: /<book> dan /<book>/<num> -> redirect ke /songs/<book>[>/<num>]
+  const mShort = pathname.match(/^\/(BE|BN|be|bn)(?:\/(\d+))?\/?$/);
+  if (mShort) {
+    const book = mShort[1].toLowerCase();
+    const num = mShort[2];
+    url.pathname = num ? `/songs/${book}/${num}` : `/songs/${book}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/songs/:path*'],
+  matcher: [
+    '/songs/:path*',
+    '/be', '/BE', '/bn', '/BN',
+    '/be/:path*', '/BE/:path*', '/bn/:path*', '/BN/:path*',
+  ],
 };

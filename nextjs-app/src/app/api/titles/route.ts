@@ -82,7 +82,7 @@ async function fetchTitle(type: 'be' | 'bn', path: string): Promise<string> {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const typeParam = (searchParams.get('type') || '').toLowerCase();
+  const typeParam = (searchParams.get('type') || '').toLowerCase();
     if (typeParam !== 'be' && typeParam !== 'bn') {
       return NextResponse.json(
         { message: "Query param 'type' harus 'be' atau 'bn'" },
