@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SearchBox } from "@/app/components/search-box";
 import { BackToTop } from "@/app/components/back-to-top";
+import { CopyPlainText } from "@/app/components/copy-plain-text";
 
 // font default dari Tailwind digunakan, Inter tidak dipakai
 
@@ -59,6 +60,8 @@ export default function RootLayout({
               </div>
             </header>
             <main>{children}</main>
+            {/* Listener global: paksa hasil salin menjadi teks polos */}
+            <CopyPlainText />
             <BackToTop />
             <footer className="mt-8 border-t border-gray-200 dark:border-brand-border">
               <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-2">
