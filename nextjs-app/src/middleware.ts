@@ -5,6 +5,17 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const { pathname } = url;
 
+  // Guard awal: lewati jalur internal/aset agar tidak terintersep
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml'
+  ) {
+    return NextResponse.next();
+  }
+
   // 1) Normalisasi case untuk /songs/<book> dan /songs/<book>/<num>
   const mSongs = pathname.match(/^\/songs\/(BE|BN|be|bn)(?:\/(\d+))?\/?$/);
   if (mSongs) {
@@ -40,6 +51,14 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Gunakan matcher global agar pola /be57 juga tertangkap.
-  matcher: ['/:path*'],
+  // Batasi matcher hanya ke pola yang relevan agar efisien dan aman.
+  matcher: [
+    // Halaman kanonis songs
+    '/songs/:path*',
+    // Alias ringkas dengan slash
+    '/(be|BE)', '/(bn|BN)',
+    '/(be|BE)/:path*', '/(bn|BN)/:path*',
+    // Alias compact tanpa slash: /be57, /BN288
+    '/((?:be|BE|bn|BN)\\d+)',
+  ],
 };
