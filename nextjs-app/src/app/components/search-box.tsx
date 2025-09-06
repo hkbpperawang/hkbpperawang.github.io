@@ -233,13 +233,16 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   return (
     <div
       className="
-        fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20
-        sm:absolute sm:right-0 sm:top-auto sm:inset-auto sm:mt-2 sm:p-0 sm:bg-transparent sm:z-50 sm:flex-none
+  fixed inset-0 z-50 flex min-h-dvh items-center justify-center p-4 bg-black/20
+  md:absolute md:right-0 md:top-auto md:inset-auto md:mt-2 md:p-0 md:bg-transparent md:z-50 md:flex-none
       "
     >
       <div
         ref={ref}
-        className="w-full max-w-md sm:max-w-[90vw] sm:w-[28rem] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg grid grid-rows-[auto,1fr,auto]"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Pencarian"
+  className="w-full max-w-md md:max-w-[90vw] md:w-[28rem] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg grid grid-rows-[auto,1fr,auto]"
       >
   <div className="p-3 border-b border-gray-100 dark:border-brand-border">
         <input
