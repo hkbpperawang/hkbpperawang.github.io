@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LinkButton } from '@/app/components/ui/link-button';
+import { InlineText } from '@/app/components/inline-text';
 import { SongSidebar } from '@/app/components/song-sidebar';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -140,9 +141,13 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
                 <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>
                   {b.type === 'reff' ? b.label : b.bait_no}
                 </p>
-                <p className={`text-xl whitespace-pre-line leading-relaxed ${b.type === 'reff' ? 'italic text-gray-700 dark:text-gray-300' : 'text-gray-800 dark:text-gray-200'}`}>
-                  {b.baris.join('\n')}
-                </p>
+                <div className={`text-xl leading-relaxed ${b.type === 'reff' ? 'italic text-gray-700 dark:text-gray-300' : 'text-gray-800 dark:text-gray-200'}`}>
+                  {b.baris.map((line, i) => (
+                    <div key={i} className="whitespace-pre-wrap">
+                      <InlineText text={line} />
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
