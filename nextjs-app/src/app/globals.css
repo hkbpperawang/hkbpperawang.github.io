@@ -44,3 +44,11 @@ body { background-color: #0C134F; color: #ffffff; }
   color: #fff;
   border: 1px solid rgba(255,255,255,0.20);
 }
+
+/* Varian lebih pekat untuk dialog/popup penting */
+.glass-panel-strong {
+  background: rgba(255,255,255,0.18);
+  -webkit-backdrop-filter: saturate(1.15) blur(12px);
+  backdrop-filter: saturate(1.15) blur(12px);
+  border: 1px solid rgba(255,255,255,0.20);
+}

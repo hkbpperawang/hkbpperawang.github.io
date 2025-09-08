@@ -48,7 +48,7 @@ export default function RootLayout({
             <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
               <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
                 <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />
-                <h1 className="text-lg font-semibold truncate group-hover:underline text-white">BE • BN • KJ HKBP</h1>
+                <h1 className="text-lg font-semibold truncate group-hover:underline text-white">Buku Nyanyian</h1>
               </Link>
               <div className="flex items-center gap-1 whitespace-nowrap">
                 <SearchBox />

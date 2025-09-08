@@ -238,13 +238,13 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
 
   const listboxId = React.useId();
   return (
-  <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/30">
+  <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/40">
       <div
         ref={ref}
   role="dialog"
   aria-modal="true"
   aria-label="Pencarian"
-    className="w-full max-w-md rounded-md glass-panel shadow-lg grid grid-rows-[auto,1fr,auto] text-white"
+  className="w-full max-w-md rounded-md glass-panel-strong shadow-lg grid grid-rows-[auto,1fr,auto] text-white"
       >
         <div className="p-3 border-b border-white/10">
         <input
