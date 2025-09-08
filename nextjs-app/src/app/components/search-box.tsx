@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-type SongItem = { name: string; type: 'be' | 'bn' };
+type SongItem = { name: string; type: 'be' | 'bn' | 'kj' };
 
 export function SearchBox() {
   const [q, setQ] = React.useState('');
@@ -43,10 +43,10 @@ export function SearchBox() {
   }, [q, router]);
 
   return (
-    <div className="relative">
+  <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
         aria-label="Buka pencarian"
         title="Cari"
       >
@@ -55,7 +55,7 @@ export function SearchBox() {
         </svg>
       </button>
 
-      {open && (
+  {open && (
         <SearchPopover
           value={q}
           onChange={setQ}
@@ -73,7 +73,7 @@ type Suggestion =
   | { kind: 'doc'; label: string; href: string }
   | { kind: 'action'; label: string; onSelect: () => void };
 
-function formatDocHref(book: 'be'|'bn', num: string) {
+function formatDocHref(book: 'be'|'bn'|'kj', num: string) {
   return `/songs/${book}/${encodeURIComponent(num)}`;
 }
 
@@ -87,7 +87,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [songs, setSongs] = React.useState<Record<'be'|'bn', Set<string>>>({ be: new Set(), bn: new Set() });
+  const [songs, setSongs] = React.useState<Record<'be'|'bn'|'kj', Set<string>>>({ be: new Set(), bn: new Set(), kj: new Set() });
   const [activeIndex, setActiveIndex] = React.useState(0);
   const router = useRouter();
 
@@ -100,13 +100,15 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   const res = await fetch('/api/songs', { cache: 'no-cache' });
         const data = await res.json();
         if (cancelled) return;
-        const be = new Set<string>();
-        const bn = new Set<string>();
+  const be = new Set<string>();
+  const bn = new Set<string>();
+  const kj = new Set<string>();
         (data.songs as SongItem[]).forEach((s) => {
           if (s.type === 'be') be.add(s.name);
           else if (s.type === 'bn') bn.add(s.name);
+          else if (s.type === 'kj') kj.add(s.name);
         });
-        setSongs({ be, bn });
+        setSongs({ be, bn, kj });
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -135,24 +137,25 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
     const v = value.trim();
     const items: Suggestion[] = [];
 
-    // 1) Ketik 'b' => sarankan BE/BN
+    // 1) Ketik 'b' => sarankan BE/BN/KJ
     if (/^b$/i.test(v)) {
       items.push({ kind: 'token', label: 'BE', apply: 'BE ' });
       items.push({ kind: 'token', label: 'BN', apply: 'BN ' });
+      items.push({ kind: 'token', label: 'KJ', apply: 'KJ ' });
       return items;
     }
 
     // 2) Ketik 'be' / 'bn' => lengkapi dengan spasi
-    if (/^(be|bn)$/i.test(v)) {
-      const code = v.toUpperCase() as 'BE'|'BN';
+    if (/^(be|bn|kj)$/i.test(v)) {
+      const code = v.toUpperCase() as 'BE'|'BN'|'KJ';
       items.push({ kind: 'token', label: `${code}`, apply: `${code} ` });
       return items;
     }
 
     // 3) Pola 'BE 57' atau 'BN 57' (spasi opsional)
-    const m = v.match(/^\s*(be|bn)\s*(\d+)\s*$/i);
+    const m = v.match(/^\s*(be|bn|kj)\s*(\d+)\s*$/i);
     if (m) {
-      const book = m[1].toLowerCase() as 'be'|'bn';
+      const book = m[1].toLowerCase() as 'be'|'bn'|'kj';
       const num = m[2];
       if (songs[book].size > 0) {
         // saran eksak, lalu perluas prefix
@@ -171,13 +174,15 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
       return items;
     }
 
-    // 4) Hanya angka => sarankan nomor tersedia dari BE & BN
+    // 4) Hanya angka => sarankan nomor tersedia dari BE, BN, KJ
     if (/^\d+$/.test(v)) {
       const digits = v;
-  const beMatches = [...songs.be].filter(n => n.startsWith(digits)).sort((a,b)=>parseInt(a)-parseInt(b));
-  const bnMatches = [...songs.bn].filter(n => n.startsWith(digits)).sort((a,b)=>parseInt(a)-parseInt(b));
-  beMatches.forEach(n => items.push({ kind: 'doc', label: `BE ${n}`, href: formatDocHref('be', n) }));
-  bnMatches.forEach(n => items.push({ kind: 'doc', label: `BN ${n}`, href: formatDocHref('bn', n) }));
+      const beMatches = [...songs.be].filter(n => n.startsWith(digits)).sort((a,b)=>parseInt(a)-parseInt(b));
+      const bnMatches = [...songs.bn].filter(n => n.startsWith(digits)).sort((a,b)=>parseInt(a)-parseInt(b));
+      const kjMatches = [...songs.kj].filter(n => n.startsWith(digits)).sort((a,b)=>parseInt(a)-parseInt(b));
+      beMatches.forEach(n => items.push({ kind: 'doc', label: `BE ${n}`, href: formatDocHref('be', n) }));
+      bnMatches.forEach(n => items.push({ kind: 'doc', label: `BN ${n}`, href: formatDocHref('bn', n) }));
+      kjMatches.forEach(n => items.push({ kind: 'doc', label: `KJ ${n}`, href: formatDocHref('kj', n) }));
       if (items.length === 0 && (songs.be.size === 0 || songs.bn.size === 0)) {
         // data belum termuat sepenuhnya
         items.push({ kind: 'action', label: 'Memuat nomor…', onSelect: () => {} });
@@ -185,6 +190,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
       // opsi cepat: buka eksak jika ada di kedua buku
       if (songs.be.has(digits)) items.unshift({ kind: 'doc', label: `BE ${digits}`, href: formatDocHref('be', digits) });
       if (songs.bn.has(digits)) items.splice(1, 0, { kind: 'doc', label: `BN ${digits}`, href: formatDocHref('bn', digits) });
+      if (songs.kj.has(digits)) items.splice(2, 0, { kind: 'doc', label: `KJ ${digits}`, href: formatDocHref('kj', digits) });
       items.push({ kind: 'action', label: `Cari "${v}"`, onSelect: onEnter });
       return items;
     }
@@ -195,6 +201,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
       if (/^b\s*$/i.test(v)) {
         items.push({ kind: 'token', label: 'BE', apply: 'BE ' });
         items.push({ kind: 'token', label: 'BN', apply: 'BN ' });
+        items.push({ kind: 'token', label: 'KJ', apply: 'KJ ' });
       }
       items.push({ kind: 'action', label: `Cari "${v}"`, onSelect: onEnter });
     }
@@ -231,20 +238,15 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
 
   const listboxId = React.useId();
   return (
-    <div
-      className="
-  fixed inset-0 z-50 flex min-h-dvh items-center justify-center p-4 bg-black/20
-  md:absolute md:right-0 md:top-auto md:inset-auto md:mt-2 md:p-0 md:bg-transparent md:z-50 md:flex-none
-      "
-    >
+  <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/30">
       <div
         ref={ref}
   role="dialog"
   aria-modal="true"
   aria-label="Pencarian"
-  className="w-full max-w-md md:max-w-[90vw] md:w-[28rem] rounded-md border border-gray-200 dark:border-brand-border bg-white dark:bg-brand-surface shadow-lg grid grid-rows-[auto,1fr,auto]"
+    className="w-full max-w-md rounded-md glass-panel shadow-lg grid grid-rows-[auto,1fr,auto] text-white"
       >
-  <div className="p-3 border-b border-gray-100 dark:border-brand-border">
+        <div className="p-3 border-b border-white/10">
         <input
           autoFocus
           type="search"
@@ -252,12 +254,12 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
           onChange={(e) => { onChange(e.target.value); setActiveIndex(0); }}
           onKeyDown={onKeyDownInput}
           placeholder={loading ? 'Memuat nomor…' : 'Ketik nomor (mis. 57), BE/BN, atau kata kunci'}
-          className="w-full p-2 rounded-md border border-gray-300 dark:border-brand-border-strong bg-white dark:bg-brand-surface text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 rounded-md border border-white/20 bg-white/10 text-sm placeholder-white/60 text-white focus:outline-none focus:ring-2 focus:ring-white/40"
           aria-label="Ketik kata yang ingin dicari"
         />
       </div>
 
-  <div id={listboxId} className="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+  <div id={listboxId} className="max-h-64 overflow-y-auto divide-y divide-white/10">
         {suggestions.map((s, idx) => (
           <SuggestionRow key={idx} id={`${listboxId}-opt-${idx}`} s={s} query={value} active={idx===activeIndex} onHover={() => setActiveIndex(idx)} onApply={() => {
             if (s.kind === 'token') onChange(s.apply);
@@ -268,23 +270,23 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
         {(!mounted || suggestions.length === 0) && (
           <div
             id={`${listboxId}-opt-empty`}
-            className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400"
+            className="px-3 py-3 text-sm text-white/70"
           >
             Tidak ada saran
           </div>
         )}
       </div>
 
-  <div className="sticky bottom-0 bg-white/90 dark:bg-brand-surface/90 backdrop-blur px-3 py-2 flex items-center justify-between gap-2 border-t border-gray-100 dark:border-brand-border">
-        <span className="text-xs text-gray-500 dark:text-gray-400">Esc untuk menutup</span>
+  <div className="sticky bottom-0 glass-panel px-3 py-2 flex items-center justify-between gap-2 border-t border-white/10">
+          <span className="text-xs text-white/70">Esc untuk menutup</span>
         <div className="flex items-center gap-2">
           <a
             href={`/search?q=${encodeURIComponent(value)}`}
-            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-brand-border-strong hover:bg-gray-100 dark:hover:bg-brand-hover"
+              className="px-3 py-1.5 text-sm rounded-md border border-white/20 hover:bg-white/10"
           >
             Lihat semua hasil
           </a>
-          <button onClick={onEnter} className="px-3 py-1.5 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60" disabled={searching}>
+            <button onClick={onEnter} className="px-3 py-1.5 text-sm rounded-md bg-white/20 hover:bg-white/30 disabled:opacity-60" disabled={searching}>
             {searching ? 'Mencari…' : 'Cari'}
           </button>
         </div>
@@ -296,21 +298,21 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
 
 function SuggestionRow({ s, active, id, query, onHover, onApply }:{ s: Suggestion; active: boolean; id: string; query: string; onHover: () => void; onApply: () => void }) {
   const base = "cursor-pointer px-3 py-2 text-sm flex items-center gap-2";
-  const activeCls = active ? 'bg-slate-100 dark:bg-brand-hover' : 'hover:bg-slate-50 dark:hover:bg-brand-hover/70';
+  const activeCls = active ? 'bg-white/10' : 'hover:bg-white/5';
   const label = s.label;
   const q = query.trim();
   function escapeRegex(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   function renderHighlighted(text: string) {
-    if (!q) return <span className="text-slate-800 dark:text-slate-100">{text}</span>;
+    if (!q) return <span className="text-white">{text}</span>;
     const tokens = Array.from(new Set(q.split(/\s+/).filter(Boolean)));
-    if (tokens.length === 0) return <span className="text-slate-800 dark:text-slate-100">{text}</span>;
+    if (tokens.length === 0) return <span className="text-white">{text}</span>;
     const re = new RegExp(`(${tokens.map(escapeRegex).join('|')})`, 'gi');
     const parts = text.split(re);
     return (
-      <span className="text-slate-800 dark:text-slate-100">
+      <span className="text-white">
         {parts.map((part, i) =>
           re.test(part) ? (
-            <mark key={i} className="bg-yellow-200 text-inherit dark:bg-yellow-600/50 rounded px-0.5">{part}</mark>
+            <mark key={i} className="bg-yellow-300/40 text-inherit rounded px-0.5">{part}</mark>
           ) : (
             <span key={i}>{part}</span>
           )
@@ -321,7 +323,7 @@ function SuggestionRow({ s, active, id, query, onHover, onApply }:{ s: Suggestio
   if (s.kind === 'doc') {
     return (
       <div id={id} className={`${base} ${activeCls}`} onMouseEnter={onHover} onClick={onApply}>
-        <span className="inline-flex items-center justify-center rounded bg-slate-200 dark:bg-slate-700 text-xs px-1.5 py-0.5">Dok</span>
+        <span className="inline-flex items-center justify-center rounded bg-white/20 text-xs px-1.5 py-0.5">Dok</span>
         {renderHighlighted(label)}
       </div>
     );
@@ -329,14 +331,14 @@ function SuggestionRow({ s, active, id, query, onHover, onApply }:{ s: Suggestio
   if (s.kind === 'token') {
     return (
       <div id={id} className={`${base} ${activeCls}`} onMouseEnter={onHover} onClick={onApply}>
-        <span className="inline-flex items-center justify-center rounded bg-sky-200/70 dark:bg-sky-700/40 text-xs px-1.5 py-0.5">Pintasan</span>
+        <span className="inline-flex items-center justify-center rounded bg-white/20 text-xs px-1.5 py-0.5">Pintasan</span>
         {renderHighlighted(label)}
       </div>
     );
   }
   return (
     <div id={id} className={`${base} ${activeCls}`} onMouseEnter={onHover} onClick={onApply}>
-      <span className="inline-flex items-center justify-center rounded bg-emerald-200/70 dark:bg-emerald-700/40 text-xs px-1.5 py-0.5">Aksi</span>
+      <span className="inline-flex items-center justify-center rounded bg-white/20 text-xs px-1.5 py-0.5">Aksi</span>
       {renderHighlighted(label)}
     </div>
   );

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const runtime = 'edge';
 
 // Define a specific type for the GitHub API response items
 interface GitHubFile {
@@ -49,12 +50,13 @@ async function fetchRepoContents(directory: string) {
 
 export async function GET() {
   try {
-    const [beFiles, bnFiles] = await Promise.all([
+    const [beFiles, bnFiles, kjFiles] = await Promise.all([
       fetchRepoContents('be'),
       fetchRepoContents('bn'),
+      fetchRepoContents('kj'),
     ]);
 
-    const allSongs = [...beFiles, ...bnFiles];
+    const allSongs = [...beFiles, ...bnFiles, ...kjFiles];
 
   const res = NextResponse.json({ songs: allSongs });
   // Turunkan cache agar update muncul lebih cepat di edge/CDN

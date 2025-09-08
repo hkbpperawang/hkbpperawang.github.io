@@ -1,17 +1,11 @@
 @import "tailwindcss";
 
-/* Definisi token warna kustom Tailwind v4 */
-/* stylelint-disable at-rule-no-unknown */
-@theme {
-  --color-brand-base: #17153B;          /* background dasar (dark) */
-  --color-brand-surface: #0f0e2c;       /* permukaan/kartu/input (dark) */
-  --color-brand-hover: #1a1850;         /* hover/aktif (dark) */
-  --color-brand-border: #23215a;        /* border halus (dark) */
-  --color-brand-border-strong: #2b2966; /* border tebal (dark) */
-}
-/* stylelint-enable at-rule-no-unknown */
-
+/* Palet dasar baru */
 html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { background-color: #0C134F; color: #ffffff; }
+/* Nuansa teks putih agar tidak flat */
+.text-muted { color: rgba(255,255,255,0.7); }
+.text-dim { color: rgba(255,255,255,0.85); }
 @media (prefers-reduced-motion: no-preference) {
 	:root { scroll-behavior: smooth; }
 }
@@ -22,7 +16,31 @@ html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; 
 }
 .animate-fade-in-up { animation: fade-in-up 140ms ease-out; }
 
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+.animate-slide-in-left { animation: slide-in-left 180ms ease-out; }
+
 /* Utilitas untuk menghindari inline style pada safe-area bottom */
 .pb-safe-bottom {
   padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
+/* Glass utilities: konsisten untuk panel, input, dan tombol */
+.glass-panel {
+  background: rgba(255,255,255,0.10);
+  -webkit-backdrop-filter: saturate(1.15) blur(10px);
+  backdrop-filter: saturate(1.15) blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.glass-input {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.20);
+}
+.glass-button {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.20);
 }

@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '@/app/components/ui/card';
 import { QuickNavigator } from '@/app/components/quick-navigator';
+import { loadTitles, prefetchOtherBooks, type Book as BookType } from '@/app/lib/titles-cache';
 
-type Book = 'be' | 'bn';
+type Book = 'be' | 'bn' | 'kj';
 
 interface Song { name: string; path: string; type: string }
-interface TitleItem { name: string; type: Book; title: string }
 
 export function SongListByType({ type }: { type: Book }) {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -27,20 +27,15 @@ export function SongListByType({ type }: { type: Book }) {
     return () => { cancelled = true; };
   }, []);
 
-  // Ambil judul untuk buku terkait
+  // Ambil judul untuk buku terkait (cached) dan prefetch buku lain
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/titles?type=${type}`, { cache: 'no-cache' })
-      .then((res) => res.json())
-      .then((data: { titles: TitleItem[] }) => {
-        if (cancelled) return;
-        const map: Record<string, string> = {};
-        for (const t of data.titles) map[`${t.type}/${t.name}`] = t.title;
-        setTitles(map);
-      })
-      .catch((e) => console.error('Failed to fetch titles:', e))
+    loadTitles(type as BookType)
+      .then((map) => { if (!cancelled) setTitles(map); })
+      .catch((e) => console.error('Failed to load titles:', e))
       .finally(() => { if (!cancelled) setLoading(false); });
+    prefetchOtherBooks(type as BookType);
     return () => { cancelled = true; };
   }, [type]);
 
@@ -53,24 +48,24 @@ export function SongListByType({ type }: { type: Book }) {
   const col3 = filteredSongs.slice(perCol * 2);
 
   return (
-  <main className="bg-gray-50 dark:bg-brand-base min-h-screen">
+  <main className="min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">Daftar Lagu {type.toUpperCase()}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Buku {type === 'be' ? 'Ende' : 'Nyanyian'} HKBP</p>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white">Daftar Lagu {type.toUpperCase()}</h1>
+          <p className="text-white/80 mt-2">Buku {type === 'be' ? 'Ende' : 'Nyanyian'} HKBP</p>
         </header>
 
         <div className="mx-auto mb-8 max-w-3xl">
           <div className="flex items-end gap-3 justify-center">
             <div className="w-[320px]">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Loncat ke nomor:</label>
+              <label className="block text-sm font-medium text-white/80 mb-2">Loncat ke nomor:</label>
               <QuickNavigator mode="inline" book={type} showBookSelect={false} className="w-full" />
             </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center text-gray-500 dark:text-gray-400">Memuat lagu...</div>
+          <div className="text-center text-white/80">Memuat lagu...</div>
         ) : (
           <section>
             <div className="mx-auto max-w-6xl w-full">
@@ -81,15 +76,15 @@ export function SongListByType({ type }: { type: Book }) {
                       <Link
                         key={song.path}
                         href={`/songs/${song.type}/${song.name}`}
-                        className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 rounded-md"
+                        className="w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-md"
                         aria-label={`Buka lagu ${titles[`${song.type}/${song.name}`] ?? `Nomor ${song.name}`}`}
                       >
                         <Card variant={type}>
                           <div className="flex flex-col">
-                            <span className={`font-semibold block uppercase break-words ${type === 'be' ? 'text-blue-800 dark:text-blue-400' : 'text-green-800 dark:text-green-400'} leading-snug`}>
+                            <span className={`font-semibold block uppercase break-words leading-snug`}>
                               {titles[`${song.type}/${song.name}`] ?? ''}
                             </span>
-                            <span className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                            <span className="mt-1 text-xs text-white/70">
                               {song.type.toUpperCase()} {song.name}
                             </span>
                           </div>

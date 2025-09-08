@@ -10,7 +10,7 @@ import { notFound } from 'next/navigation';
 interface SongInfo {
   name: string;
   path: string;
-  type: string;
+  type: string | 'kj';
 }
 
 interface Bait {
@@ -28,11 +28,41 @@ interface SongData {
 }
 
 async function getAllSongs(): Promise<SongInfo[]> {
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 900 } });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.songs;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  const repo = 'hkbpperawang/nyanyian-source';
+  if (!token || token === 'PASTE_YOUR_NEW_AND_SECRET_TOKEN_HERE') {
+    // Jaga-jaga: fallback ke API lokal bila token kosong
+    try {
+      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+      const r = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 900 } });
+      if (!r.ok) return [];
+      const d = await r.json();
+      return d.songs as SongInfo[];
+    } catch {
+      return [];
+    }
+  }
+  async function listDir(dir: 'be'|'bn'|'kj'): Promise<SongInfo[]> {
+    const url = `https://api.github.com/repos/${repo}/contents/${dir}`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'HKBP-Perawang-App',
+      },
+      next: { revalidate: 900 },
+    });
+    if (!res.ok) return [];
+    const items = await res.json() as { type: 'file'|'dir'; name: string; path: string }[];
+    return items.filter(i => i.type === 'file' && i.name.endsWith('.json')).map(i => ({
+      name: i.name.replace(/\.json$/i, ''),
+      path: i.path,
+      type: dir,
+    }));
+  }
+  const [be, bn, kj] = await Promise.all([listDir('be'), listDir('bn'), listDir('kj')]);
+  return [...be, ...bn, ...kj];
 }
 
 async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
@@ -96,52 +126,49 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
   const nextSong = currentIndex < bookSongs.length - 1 ? bookSongs[currentIndex + 1] : null;
 
   return (
-  <main className="bg-white dark:bg-brand-base min-h-screen">
+    <main className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Sidebar trigger */}
-  <SongSidebar type={type as 'be'|'bn'} />
-        
-        <nav className="flex justify-between items-center mb-6 text-sm">
-          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            &larr; Daftar Lagu
-          </Link>
-          <div className="flex items-center space-x-2">
-            {prevSong ? (
-              <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`}>&larr; {prevSong.name}</LinkButton>
-            ) : <div className="px-4 py-2 invisible"></div>}
-            {nextSong ? (
-              <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`}>{nextSong.name} &rarr;</LinkButton>
-            ) : <div className="px-4 py-2 invisible"></div>}
-          </div>
-        </nav>
+        {/* Bar atas: tombol menu kanan dan nav prev/next di atas judul */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <Link href="/" className="text-white/80 hover:text-white transition-colors text-sm">&larr; Daftar Lagu</Link>
+          <SongSidebar type={type as 'be'|'bn'|'kj'} />
+        </div>
 
-  <header className="text-center border-b dark:border-brand-border pb-6 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50 mt-1">{song.judul || song.judul_asli || ''}</h1>
+        {/* Navigasi atas, fungsi sama dgn bawah */}
+        <div className="flex items-center justify-between gap-2 mb-6 text-sm">
+          {prevSong ? (
+            <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`} className="bg-white/10 hover:bg-white/20 border border-white/20">&larr; {prevSong.name}</LinkButton>
+          ) : <span />}
+          {nextSong ? (
+            <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`} className="bg-white/10 hover:bg-white/20 border border-white/20">{nextSong.name} &rarr;</LinkButton>
+          ) : <span />}
+        </div>
+
+        <header className="text-center border-b border-white/10 pb-6 mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mt-1">{song.judul || song.judul_asli || ''}</h1>
           {type === 'bn' && song.judul_asli ? (
-            <p className="mt-2 text-base md:text-lg text-gray-600 dark:text-gray-300">{song.judul_asli}</p>
+            <p className="mt-2 text-base md:text-lg text-white/80">{song.judul_asli}</p>
           ) : null}
           {(() => { const nd = (song.nada_dasar || '').trim(); return nd ? (
             <div className="mt-2">
               <span
-                className="inline-block rounded px-2 py-0.5 text-xs font-medium
-                           bg-slate-100 text-slate-700 border border-slate-200
-                           dark:bg-brand-surface/80 dark:text-slate-100 dark:border-brand-border"
+                className="inline-block rounded px-2 py-0.5 text-xs font-medium bg-white/10 text-white border border-white/20"
                 aria-label="Nada dasar"
               >
-        {nd}
+                {nd}
               </span>
             </div>
-      ) : null; })()}
+          ) : null; })()}
         </header>
 
         <div className="max-w-2xl mx-auto">
           <div className="space-y-6">
             {song.bait.map((b, index) => (
               <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
-                <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>
+                <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-white/70' : 'text-white'}`}>
                   {b.type === 'reff' ? b.label : b.bait_no}
                 </p>
-                <div className={`text-xl leading-relaxed ${b.type === 'reff' ? 'italic text-gray-700 dark:text-gray-300' : 'text-gray-800 dark:text-gray-200'}`}>
+                <div className={`text-xl leading-relaxed ${b.type === 'reff' ? 'italic text-white/90' : 'text-white'}`}>
                   {b.baris.map((line, i) => (
                     <div key={i} className="whitespace-pre-wrap">
                       <InlineText text={line} />
@@ -155,13 +182,13 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
 
       </div>
       {/* Navigasi bawah */}
-      <div className="border-t dark:border-brand-border mt-8">
+      <div className="border-t border-white/10 mt-8">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between text-sm">
           {prevSong ? (
-            <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`}>&larr; {prevSong.name}</LinkButton>
+            <LinkButton href={`/songs/${prevSong.type}/${prevSong.name}`} className="bg-white/10 hover:bg-white/20 border border-white/20">&larr; {prevSong.name}</LinkButton>
           ) : <span />}
           {nextSong ? (
-            <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`}>{nextSong.name} &rarr;</LinkButton>
+            <LinkButton href={`/songs/${nextSong.type}/${nextSong.name}`} className="bg-white/10 hover:bg-white/20 border border-white/20">{nextSong.name} &rarr;</LinkButton>
           ) : <span />}
         </div>
       </div>
@@ -185,7 +212,7 @@ export async function generateMetadata(
   try {
     const res = await fetch(`${baseUrl}/api/titles?type=${type}`, { next: { revalidate: 900 } });
     if (res.ok) {
-      const data = await res.json() as { titles: { name: string; type: 'be'|'bn'; title: string }[] };
+      const data = await res.json() as { titles: { name: string; type: 'be'|'bn'|'kj'; title: string }[] };
       const found = data.titles.find(t => t.name === name);
       if (found?.title) titleText = `${found.title} — ${type.toUpperCase()} ${name}`;
     }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const runtime = 'edge';
 
 interface GitHubFile {
   type: 'file' | 'dir';
@@ -9,11 +10,11 @@ interface GitHubFile {
 interface SongTitleItem {
   name: string; // number as string, e.g., "57"
   path: string; // e.g., "be/57.json"
-  type: 'be' | 'bn';
+  type: 'be' | 'bn' | 'kj';
   title: string; // cleaned title without BE/BN prefix, includes number: "57 ..."
 }
 
-function cleanJudul(type: 'be' | 'bn', judul: string): string {
+function cleanJudul(type: 'be' | 'bn' | 'kj', judul: string): string {
   const prefix = type.toUpperCase() + ' ';
   if (judul.startsWith(prefix)) {
     return judul.slice(prefix.length).trimStart();
@@ -23,7 +24,7 @@ function cleanJudul(type: 'be' | 'bn', judul: string): string {
   return m ? m[1] : judul;
 }
 
-async function listFiles(type: 'be' | 'bn') {
+async function listFiles(type: 'be' | 'bn' | 'kj') {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
   const url = `https://api.github.com/repos/${repo}/contents/${type}`;
@@ -51,7 +52,7 @@ async function listFiles(type: 'be' | 'bn') {
   return contents.filter((i) => i.type === 'file' && i.name.endsWith('.json'));
 }
 
-async function fetchTitle(type: 'be' | 'bn', path: string): Promise<string> {
+async function fetchTitle(type: 'be' | 'bn' | 'kj', path: string): Promise<string> {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
   const url = `https://api.github.com/repos/${repo}/contents/${path}`;
@@ -83,14 +84,14 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
   const typeParam = (searchParams.get('type') || '').toLowerCase();
-    if (typeParam !== 'be' && typeParam !== 'bn') {
+  if (typeParam !== 'be' && typeParam !== 'bn' && typeParam !== 'kj') {
       return NextResponse.json(
-        { message: "Query param 'type' harus 'be' atau 'bn'" },
+    { message: "Query param 'type' harus 'be', 'bn', atau 'kj'" },
         { status: 400 }
       );
     }
 
-    const type = typeParam as 'be' | 'bn';
+  const type = typeParam as 'be' | 'bn' | 'kj';
     const files = await listFiles(type);
 
     // Batasi concurrency agar efisien dan aman dari rate-limit

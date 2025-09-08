@@ -22,8 +22,8 @@ export function LinkButton({ href, children, className, variant = 'subtle', size
   const base = 'transition-colors';
   const sizeCls = size === 'sm' ? 'text-sm px-3 py-2' : 'px-4 py-2';
 
-  const subtle = 'rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 dark:text-slate-200 dark:bg-brand-surface dark:hover:bg-brand-hover';
-  const outline = 'rounded-md border border-slate-300 text-slate-800 hover:bg-slate-100 dark:text-slate-200 dark:border-brand-border-strong dark:hover:bg-brand-hover';
+  const subtle = 'rounded-md bg-white/10 hover:bg-white/20 text-white';
+  const outline = 'rounded-md border border-white/20 text-white hover:bg-white/10';
 
   const variantCls = variant === 'outline' ? outline : subtle;
 

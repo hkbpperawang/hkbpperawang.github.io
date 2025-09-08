@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/app/components/theme-provider";
-import ThemeSwitcher from "@/app/components/theme-switcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import Image from "next/image";
@@ -44,35 +42,32 @@ export default function RootLayout({
         <link rel="icon" href="/HKBP_512.png?v=2" sizes="192x192" type="image/png" />
         <link rel="icon" href="/HKBP_512.png?v=2" sizes="512x512" type="image/png" />
       </head>
-  <body className="min-h-dvh bg-white text-slate-900 dark:bg-brand-base dark:text-slate-100">
-        <ThemeProvider>
-          <div className="relative min-h-screen">
-            <header className="sticky top-0 z-20 border-b shadow-sm bg-white dark:bg-brand-base border-slate-200 dark:border-brand-border">
-              <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-                <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
-                  <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />
-                  <h1 className="text-lg font-semibold truncate group-hover:underline">BE dan BN HKBP</h1>
-                </Link>
-                <div className="flex items-center gap-1 whitespace-nowrap">
-                  <SearchBox />
-                  <ThemeSwitcher />
-                </div>
+  <body className="min-h-dvh bg-[#0C134F] text-white">
+        <div className="relative min-h-screen">
+          <header className="sticky top-0 z-20 border-b border-white/15 shadow-sm bg-[#0C134F]/70 glass-panel">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+              <Link href="/" className="flex items-center gap-3 min-w-0 whitespace-nowrap overflow-hidden group">
+                <Image src="/HKBP_512.png" alt="HKBP Perawang" width={32} height={32} className="rounded transition-transform group-hover:scale-105" />
+                <h1 className="text-lg font-semibold truncate group-hover:underline text-white">BE • BN • KJ HKBP</h1>
+              </Link>
+              <div className="flex items-center gap-1 whitespace-nowrap">
+                <SearchBox />
               </div>
-            </header>
-            <main>{children}</main>
-            {/* Listener global: paksa hasil salin menjadi teks polos */}
-            <CopyPlainText />
-            <BackToTop />
-            <footer className="mt-8 border-t border-gray-200 dark:border-brand-border">
-              <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <p>© 2024–{new Date().getFullYear()} HKBP Perawang.</p>
-                <p>
-                  Dibuat oleh <a className="underline hover:text-gray-900 dark:hover:text-gray-200" href="https://wwwhkbpperawang.org" target="_blank" rel="noopener noreferrer">Tim Multimedia HKBP Perawang</a>
-                </p>
-              </div>
-            </footer>
-          </div>
-        </ThemeProvider>
+            </div>
+          </header>
+          <main>{children}</main>
+          {/* Listener global: paksa hasil salin menjadi teks polos */}
+          <CopyPlainText />
+          <BackToTop />
+          <footer className="mt-8 border-t border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-white/70 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <p>© 2024–{new Date().getFullYear()} HKBP Perawang.</p>
+              <p>
+                Dibuat oleh <a className="underline hover:text-white" href="https://wwwhkbpperawang.org" target="_blank" rel="noopener noreferrer">Tim Multimedia HKBP Perawang</a>
+              </p>
+            </div>
+          </footer>
+        </div>
   {/* Vercel Speed Insights */}
   <SpeedInsights />
   {/* Vercel Analytics */}
