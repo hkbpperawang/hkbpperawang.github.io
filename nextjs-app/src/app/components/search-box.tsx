@@ -244,7 +244,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
   role="dialog"
   aria-modal="true"
   aria-label="Pencarian"
-  className="w-full max-w-md rounded-md glass-panel-strong shadow-lg grid grid-rows-[auto,1fr,auto] text-white"
+  className="w-full max-w-md rounded-md glass-modal shadow-lg grid grid-rows-[auto,1fr,auto] text-white"
       >
         <div className="p-3 border-b border-white/10">
         <input
@@ -277,7 +277,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
         )}
       </div>
 
-  <div className="sticky bottom-0 glass-panel px-3 py-2 flex items-center justify-between gap-2 border-t border-white/10">
+  <div className="sticky bottom-0 bg-transparent px-3 py-2 flex items-center justify-between gap-2 border-t border-white/10">
           <span className="text-xs text-white/70">Esc untuk menutup</span>
         <div className="flex items-center gap-2">
           <a

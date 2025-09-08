@@ -54,6 +54,30 @@ body { background-color: #0C134F; color: #ffffff; }
   border: 1px solid rgba(255,255,255,0.22);
 }
 
+/* Lebih fokus khusus untuk dialog pencarian */
+.glass-modal {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate; /* create stacking context so ::before stays behind content */
+  /* base tint so text di dalam kontras */
+  background: rgba(8, 12, 40, 0.80);
+  border: 1px solid rgba(255,255,255,0.24);
+}
+.glass-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* behind content */
+  /* efek blur kuat untuk seluruh kartu */
+  -webkit-backdrop-filter: blur(28px) saturate(1.05);
+  backdrop-filter: blur(28px) saturate(1.05);
+  /* lapisan tambahan untuk mengurangi keterbacaan latar belakang */
+  background: rgba(8, 12, 40, 0.20);
+  pointer-events: none;
+}
+/* Ensure modal children render above the blur layer */
+.glass-modal > * { position: relative; z-index: 1; }
+
 /* Backdrop overlay with subtle blur (for full-screen popovers/menus) */
 .glass-backdrop {
   /* Lebih pekat + blur kuat agar latar belakang benar-benar kabur */
