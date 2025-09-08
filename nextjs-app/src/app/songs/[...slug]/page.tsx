@@ -66,35 +66,17 @@ async function getAllSongs(): Promise<SongInfo[]> {
 }
 
 async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
-  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-  const repo = 'hkbpperawang/nyanyian-source';
-  const fileName = fileNameNoExt.endsWith('.json') ? fileNameNoExt : `${fileNameNoExt}.json`;
-  const path = `${type}/${fileName}`;
-  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-
-  if (!token || token === 'PASTE_YOUR_NEW_AND_SECRET_TOKEN_HERE') {
-    throw new Error('Server configuration error: GITHUB_TOKEN is missing.');
-  }
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github.v3+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'HKBP-Perawang-App'
-    },
-  next: { revalidate: 900 },
-  });
-
+  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  const name = fileNameNoExt.endsWith('.json') ? fileNameNoExt.replace(/\.json$/i, '') : fileNameNoExt;
+  const url = `${baseUrl}/api/song?type=${encodeURIComponent(type)}&name=${encodeURIComponent(name)}`;
+  const res = await fetch(url, { next: { revalidate: 900 } });
   if (res.status === 404) notFound();
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Failed to fetch song data for ${path}: ${res.status} ${res.statusText} — ${text}`);
+    throw new Error(`Failed to fetch song data via API for ${type}/${name}: ${res.status} ${res.statusText} — ${text}`);
   }
-
-  const data = await res.json();
-  const content = Buffer.from(data.content, 'base64').toString('utf-8');
-  return JSON.parse(content);
+  const data = await res.json() as { data: SongData };
+  return data.data;
 }
 
 // == THE PAGE COMPONENT ==
