@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { LinkButton } from '@/app/components/ui/link-button';
 import { InlineText } from '@/app/components/inline-text';
+import { LyricsZoom } from '@/app/components/lyrics-zoom';
 import { SongSidebar } from '@/app/components/song-sidebar';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -144,22 +145,26 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
         </header>
 
         <div className="max-w-2xl mx-auto">
-          <div className="space-y-6">
-            {song.bait.map((b, index) => (
-              <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
-                <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-white/70' : 'text-white'}`}>
-                  {b.type === 'reff' ? b.label : b.bait_no}
-                </p>
-                <div className={`text-xl leading-relaxed ${b.type === 'reff' ? 'italic text-white/90' : 'text-white'}`}>
-                  {b.baris.map((line, i) => (
-                    <div key={i} className="whitespace-pre-wrap">
-                      <InlineText text={line} />
+          <LyricsZoom>
+            <div className="space-y-6">
+              {song.bait.map((b, index) => (
+                <div key={index} className="grid grid-cols-[auto,1fr] gap-x-4 items-start">
+                  <p className={`font-bold text-lg pt-1 ${b.type === 'reff' ? 'italic text-white/70' : 'text-white'}`}>
+                    {b.type === 'reff' ? b.label : b.bait_no}
+                  </p>
+                  <div className="text-xl leading-relaxed">
+                    <div className={`${b.type === 'reff' ? 'italic text-white/90 reff-content' : 'text-white bait-content'}`} data-bait={b.type !== 'reff' ? '' : undefined} data-reff={b.type === 'reff' ? '' : undefined}>
+                      {b.baris.map((line, i) => (
+                        <div key={i} className="whitespace-pre-wrap">
+                          <InlineText text={line} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </LyricsZoom>
         </div>
 
       </div>
