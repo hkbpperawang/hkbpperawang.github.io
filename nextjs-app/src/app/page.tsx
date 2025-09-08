@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/app/components/ui/card';
 import { QuickNavigator } from '@/app/components/quick-navigator';
+import { BookSelect } from '@/app/components/ui/book-select';
 import { loadTitles, prefetchOtherBooks } from '@/app/lib/titles-cache';
 
 // Interface for song data
@@ -75,23 +76,19 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12 pt-8">
           <h1 className="text-5xl font-extrabold text-white">Daftar Lagu</h1>
-          <p className="text-lg text-white/80 mt-2">Buku Ende, Buku Nyanyian, dan (baru) Kidung Jemaat</p>
+          <p className="text-lg text-white/80 mt-2">Buku Ende, Buku Nyanyian HKBP, dan Kidung Jemaat</p>
         </header>
 
         <div className="mx-auto mb-8 max-w-3xl">
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3">
             <div className="flex-1">
               <label htmlFor="book-select" className="block text-sm font-medium text-white/80 mb-2">Pilih Buku:</label>
-              <select 
+              <BookSelect
                 id="book-select"
-                value={selectedBook}
-                onChange={(e) => setSelectedBook(e.target.value)}
-                className="block w-full p-3 glass-input rounded-md shadow-sm focus:outline-none focus:ring-white/40 focus:border-white/40"
-              >
-                <option value="be">Buku Ende (BE)</option>
-                <option value="bn">Buku Nyanyian (BN)</option>
-                <option value="kj">Kidung Jemaat (KJ)</option>
-              </select>
+                value={selectedBookTyped}
+                onChange={(v) => setSelectedBook(v)}
+                className="w-full"
+              />
             </div>
             <div className="md:w-[320px]">
               <label className="block text-sm font-medium text-white/80 mb-2">Loncat ke nomor:</label>

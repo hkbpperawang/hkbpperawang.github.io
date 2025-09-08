@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { QuickNavigator } from '@/app/components/quick-navigator';
+import { BookSelect } from '@/app/components/ui/book-select';
 
 export function SongSidebar({ type }: { type: 'be'|'bn'|'kj' }) {
   const [open, setOpen] = React.useState(false);
@@ -19,7 +20,7 @@ export function SongSidebar({ type }: { type: 'be'|'bn'|'kj' }) {
 
       {open && (
         <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div className="absolute inset-0 glass-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
     <aside className="absolute left-0 top-0 h-full w-80 max-w-[85vw] glass-panel border-r border-white/15 shadow-xl p-4 overflow-y-auto text-white animate-slide-in-left">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold">Navigasi</h2>
@@ -28,16 +29,7 @@ export function SongSidebar({ type }: { type: 'be'|'bn'|'kj' }) {
             <div className="space-y-4">
               <div>
                 <label htmlFor="sidebar-book" className="block text-sm mb-1">Pilih Buku</label>
-                <select
-                  id="sidebar-book"
-                  value={book}
-                  onChange={(e)=>setBook(e.target.value as 'be'|'bn'|'kj')}
-      className="w-full px-2 py-1.5 text-sm rounded-md glass-input"
-                >
-                  <option value="be">BE</option>
-                  <option value="bn">BN</option>
-                  <option value="kj">KJ</option>
-                </select>
+                <BookSelect id="sidebar-book" value={book} onChange={(v)=>setBook(v)} className="w-full" />
               </div>
               <div>
                 <label className="block text-sm mb-1">Loncat Ke Nomor</label>

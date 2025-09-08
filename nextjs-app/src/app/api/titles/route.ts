@@ -5,23 +5,14 @@ interface GitHubFile {
   type: 'file' | 'dir';
   name: string;
   path: string;
+  download_url?: string | null;
 }
 
 interface SongTitleItem {
   name: string; // number as string, e.g., "57"
   path: string; // e.g., "be/57.json"
   type: 'be' | 'bn' | 'kj';
-  title: string; // cleaned title without BE/BN prefix, includes number: "57 ..."
-}
-
-function cleanJudul(type: 'be' | 'bn' | 'kj', judul: string): string {
-  const prefix = type.toUpperCase() + ' ';
-  if (judul.startsWith(prefix)) {
-    return judul.slice(prefix.length).trimStart();
-  }
-  // Fallback: remove any two-letter code followed by space, keep the rest
-  const m = judul.match(/^[A-Z]{2}\s+(.*)$/);
-  return m ? m[1] : judul;
+  title: string; // exact judul from source JSON
 }
 
 async function listFiles(type: 'be' | 'bn' | 'kj') {
@@ -52,30 +43,45 @@ async function listFiles(type: 'be' | 'bn' | 'kj') {
   return contents.filter((i) => i.type === 'file' && i.name.endsWith('.json'));
 }
 
-async function fetchTitle(type: 'be' | 'bn' | 'kj', path: string): Promise<string> {
+async function fetchTitle(type: 'be' | 'bn' | 'kj', file: GitHubFile): Promise<string> {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   const repo = 'hkbpperawang/nyanyian-source';
-  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github.v3+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'HKBP-Perawang-App',
-    },
-    next: { revalidate: 3600 },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`GitHub fetch error for ${path}: ${res.status} ${res.statusText} — ${text}`);
+  const rawUrl = file.download_url;
+  let text: string | null = null;
+  if (rawUrl) {
+    const resRaw = await fetch(rawUrl, {
+      headers: {
+        Authorization: `token ${token}`,
+        'User-Agent': 'HKBP-Perawang-App',
+      },
+      next: { revalidate: 3600 },
+    });
+    if (resRaw.ok) {
+      text = await resRaw.text();
+    }
+  }
+  if (text === null) {
+    // Fallback to contents API (base64)
+    const url = `https://api.github.com/repos/${repo}/contents/${file.path}`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'HKBP-Perawang-App',
+      },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`GitHub fetch error for ${file.path}: ${res.status} ${res.statusText} - ${t}`);
+    }
+    const data = await res.json();
+    text = Buffer.from(data.content, 'base64').toString('utf-8');
   }
 
-  const data = await res.json();
-  const content = Buffer.from(data.content, 'base64').toString('utf-8');
-  const json = JSON.parse(content) as { judul?: string; judul_asli?: string };
-  if (json.judul) return cleanJudul(type, json.judul);
+  const json = JSON.parse(text) as { judul?: string; judul_asli?: string };
+  if (json.judul) return json.judul; // return exact value as requested
   if (json.judul_asli) return json.judul_asli;
   return '';
 }
@@ -94,8 +100,8 @@ export async function GET(req: Request) {
   const type = typeParam as 'be' | 'bn' | 'kj';
     const files = await listFiles(type);
 
-    // Batasi concurrency agar efisien dan aman dari rate-limit
-    const CONCURRENCY = 8;
+    // Batasi concurrency agar efisien namun cepat
+    const CONCURRENCY = 32;
     const items: SongTitleItem[] = [];
 
     for (let i = 0; i < files.length; i += CONCURRENCY) {
@@ -103,7 +109,7 @@ export async function GET(req: Request) {
       const results = await Promise.all(
         chunk.map(async (f) => {
           const name = f.name.replace(/\.json$/i, '');
-          const title = await fetchTitle(type, f.path);
+          const title = await fetchTitle(type, f);
           return {
             name,
             path: f.path,

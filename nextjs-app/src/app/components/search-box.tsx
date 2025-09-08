@@ -238,7 +238,7 @@ function SearchPopover({ value, onChange, onEnter, onClose, searching }:{
 
   const listboxId = React.useId();
   return (
-  <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 bg-black/40">
+  <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 glass-backdrop">
       <div
         ref={ref}
   role="dialog"

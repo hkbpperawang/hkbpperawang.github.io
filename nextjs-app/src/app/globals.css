@@ -53,9 +53,55 @@ body { background-color: #0C134F; color: #ffffff; }
   border: 1px solid rgba(255,255,255,0.20);
 }
 
+/* Backdrop overlay with subtle blur (for full-screen popovers/menus) */
+.glass-backdrop {
+  background: rgba(12, 19, 79, 0.78); /* stronger tint for readability */
+  -webkit-backdrop-filter: saturate(1.05) blur(16px);
+  backdrop-filter: saturate(1.05) blur(16px);
+}
+
+/* Animated base background */
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.site-bg .blob {
+  position: absolute;
+  width: 52vw;
+  height: 52vw;
+  max-width: 900px;
+  max-height: 900px;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.28;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+.site-bg .b1 { left: -10vw; top: -10vh; background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.9), rgba(99, 102, 241, 0.0) 60%); animation: blob-move-1 70s ease-in-out infinite; }
+.site-bg .b2 { right: -12vw; top: 5vh; background: radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.85), rgba(244, 63, 94, 0.0) 60%); animation: blob-move-2 80s ease-in-out infinite; }
+.site-bg .b3 { left: 10vw; bottom: -12vh; background: radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.8), rgba(34, 211, 238, 0.0) 60%); animation: blob-move-3 85s ease-in-out infinite; }
+
+@keyframes blob-move-1 {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(40vw, 25vh, 0) scale(1.15); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes blob-move-2 {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(-45vw, 35vh, 0) scale(1.1); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes blob-move-3 {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(25vw, -30vh, 0) scale(1.2); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+
 /* ====== Lyrics zoom (pinch-to-font-scale) ====== */
 .lyrics-root {
-  /* Izinkan scroll vertikal, kita blok hanya pinch via preventDefault di handler */
   touch-action: pan-y;
   --lyrics-scale: 1;
 }

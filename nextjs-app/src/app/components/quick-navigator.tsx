@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { BookSelect } from '@/app/components/ui/book-select';
 
 type Song = { name: string; type: 'be' | 'bn' | 'kj' };
 
@@ -98,20 +99,14 @@ export function QuickNavigator({
     <div ref={panelRef} className={`relative ${className ?? ''}`} data-mode={mode}>
       <div className="flex items-center gap-2">
         {showBookSelect ? (
-          <select
+          <BookSelect
             value={book}
-            onChange={(e) => {
-              const val = e.target.value as 'be'|'bn'|'kj';
+            onChange={(val) => {
               if (onBookChange) onBookChange(val); else setBookState(val);
               setTimeout(()=>inputRef.current?.focus(), 0);
             }}
-            className="px-2 py-1.5 text-sm rounded-md border border-white/20 bg-white/10 text-white"
-            aria-label="Pilih buku"
-          >
-            <option value="be">BE</option>
-            <option value="bn">BN</option>
-            <option value="kj">KJ</option>
-          </select>
+            className="min-w-[6.5rem]"
+          />
         ) : null}
 
         <input
