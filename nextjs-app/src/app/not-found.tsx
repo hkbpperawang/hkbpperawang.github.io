@@ -150,7 +150,7 @@ export default function NotFoundPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-brand-base text-slate-900 dark:text-slate-100 flex flex-col items-center">
+    <main className="min-h-screen bg-transparent text-slate-900 dark:text-slate-100 flex flex-col items-center">
       <div className="max-w-3xl w-full px-4 pt-10 pb-6 text-center">
         <h1 className="text-3xl font-bold">404 - Halaman tidak ditemukan</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">Sambil menunggu, mainkan Tetris mini di bawah ini.</p>
@@ -203,4 +203,3 @@ export default function NotFoundPage() {
     </main>
   );
 }
-
