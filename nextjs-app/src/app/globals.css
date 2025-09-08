@@ -47,17 +47,19 @@ body { background-color: #0C134F; color: #ffffff; }
 
 /* Varian lebih pekat untuk dialog/popup penting */
 .glass-panel-strong {
-  background: rgba(255,255,255,0.30);
-  -webkit-backdrop-filter: saturate(1.05) blur(16px);
-  backdrop-filter: saturate(1.05) blur(16px);
-  border: 1px solid rgba(255,255,255,0.25);
+  /* Lebih gelap agar teks putih kontras dan mudah dibaca */
+  background: rgba(14, 18, 58, 0.78);
+  -webkit-backdrop-filter: saturate(1.05) blur(20px);
+  backdrop-filter: saturate(1.05) blur(20px);
+  border: 1px solid rgba(255,255,255,0.22);
 }
 
 /* Backdrop overlay with subtle blur (for full-screen popovers/menus) */
 .glass-backdrop {
-  background: rgba(10, 14, 44, 0.92); /* darker + more blur */
-  -webkit-backdrop-filter: blur(30px) brightness(0.65) saturate(1);
-  backdrop-filter: blur(30px) brightness(0.65) saturate(1);
+  /* Lebih pekat + blur kuat agar latar belakang benar-benar kabur */
+  background: rgba(10, 14, 44, 0.94);
+  -webkit-backdrop-filter: blur(40px) brightness(0.6) saturate(1.05);
+  backdrop-filter: blur(40px) brightness(0.6) saturate(1.05);
 }
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   /* Fallback when backdrop filter unsupported: use darker color */

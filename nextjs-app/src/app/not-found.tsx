@@ -160,11 +160,32 @@ export default function NotFoundPage() {
       </div>
 
       <div className="w-full flex flex-col items-center gap-4">
-        <canvas
-          ref={canvasRef}
-          onClick={() => { if (!running || paused) return; const rot = rotate(shape); if (!collides(pos.x, pos.y, rot)) setShape(rot); }}
-          className="rounded-md border border-slate-200 dark:border-brand-border shadow touch-none"
-        />
+        <div
+          className="relative"
+          style={{ width: COLS * cell, height: ROWS * cell }}
+        >
+          <canvas
+            ref={canvasRef}
+            onClick={() => { if (!running || paused) return; const rot = rotate(shape); if (!collides(pos.x, pos.y, rot)) setShape(rot); }}
+            className="absolute inset-0 rounded-md border border-slate-200 dark:border-brand-border shadow touch-none"
+          />
+          {(!started || gameOver) && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
+              <div className="w-full max-w-[min(90%,360px)] text-center rounded-md glass-panel-strong border border-white/15 text-white px-5 py-5">
+                {!started && !gameOver && (<div className="text-xl font-bold">Mulai Permainan</div>)}
+                {gameOver && (
+                  <div>
+                    <div className="text-2xl font-extrabold">Game Over</div>
+                    <div className="text-white/80 mt-1">Skor: {score}</div>
+                  </div>
+                )}
+                <div className="mt-4">
+                  <button onClick={startGame} className="px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700">{gameOver ? 'Mulai Lagi' : 'Mulai'}</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-4">
           <button aria-label="Kiri" className="px-4 py-3 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={() => setPos(p => !collides(p.x - 1, p.y) ? { ...p, x: p.x - 1 } : p)}>◀</button>
@@ -175,22 +196,7 @@ export default function NotFoundPage() {
         </div>
 
         {/* Center overlay for Start and Game Over */}
-        {(!started || gameOver) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-sm text-center rounded-md glass-panel-strong border border-white/15 text-white px-5 py-5">
-              {!started && !gameOver && (<div className="text-xl font-bold">Mulai Permainan</div>)}
-              {gameOver && (
-                <div>
-                  <div className="text-2xl font-extrabold">Game Over</div>
-                  <div className="text-white/80 mt-1">Skor: {score}</div>
-                </div>
-              )}
-              <div className="mt-4">
-                <button onClick={startGame} className="px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700">{gameOver ? 'Mulai Lagi' : 'Mulai'}</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Overlay dipindah ke dalam area game di atas */}
 
         <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">Skor: {score}</div>
         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
