@@ -8,18 +8,18 @@ const nextConfig: NextConfig = {
     return [
 
       {
-        source: "/songs/:type(be|bn)/:name(\\d+)/",
+        source: "/songs/:type(be|bn|kj)/:name(\\d+)/",
         destination: "/songs/:type/:name",
         permanent: true,
       },
       {
-        source: "/songs/:type(be|bn)/",
+        source: "/songs/:type(be|bn|kj)/",
         destination: "/songs/:type",
         permanent: true,
       },
 
       {
-        source: "/songs/:type(be|bn)/:name(\\d+)\\.json",
+        source: "/songs/:type(be|bn|kj)/:name(\\d+)\\.json",
         destination: "/songs/:type/:name",
         permanent: true,
       },
@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/bn",
+        destination: "/songs/bn",
+        permanent: false,
+      },
+      {
+        source: "/kj",
         destination: "/songs/bn",
         permanent: false,
       },
