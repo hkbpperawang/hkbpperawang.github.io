@@ -10,7 +10,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   if (!q) notFound();
 
   let errorMsg: string | null = null;
-  let data: { results: { type: 'be'|'bn'; name: string; title: string; snippet: string }[] } = { results: [] };
+  let data: { results: { type: 'be'|'bn'|'kj'; name: string; title: string; snippet: string }[] } = { results: [] };
   try {
     const h = await headers();
     const host = h.get('host');

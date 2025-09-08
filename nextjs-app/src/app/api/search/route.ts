@@ -5,11 +5,11 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const q = (searchParams.get('q') || '').trim();
-    const scope = (searchParams.get('type') || 'all').toLowerCase(); // 'be' | 'bn' | 'all'
+    const scope = (searchParams.get('type') || 'all').toLowerCase();
     if (!q) return NextResponse.json({ results: [] });
 
-  const isScopeValid = (s: string): s is 'be' | 'bn' | 'all' => s === 'be' || s === 'bn' || s === 'all';
-  const normalizedScope: 'be' | 'bn' | 'all' = isScopeValid(scope) ? scope : 'all';
+  const isScopeValid = (s: string): s is 'be' | 'bn' | 'kj' | 'all' => s === 'be' || s === 'bn' || s === 'kj' || s === 'all';
+  const normalizedScope: 'be' | 'bn' | 'kj' | 'all' = isScopeValid(scope) ? scope : 'all';
   const hits: SearchHit[] = await searchInRepo(q, normalizedScope);
 
   // Batasi hasil agar respons cepat

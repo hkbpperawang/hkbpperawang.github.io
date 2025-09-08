@@ -1,4 +1,4 @@
-export type Book = 'be'|'bn';
+export type Book = 'be'|'bn'|'kj';
 
 interface GitHubFile { type: 'file'|'dir'; name: string; path: string }
 
@@ -23,7 +23,7 @@ async function listFiles(type: Book): Promise<GitHubFile[]> {
   return items.filter(i => i.type === 'file' && i.name.endsWith('.json'));
 }
 
-async function fetchJson(path: string): Promise<{ judul?: string; judul_asli?: string; bait?: { baris?: string[] }[] }>{
+async function fetchJson(path: string): Promise<{ judul?: string; judul_asli?: string; bait?: { baris?: string[] }[] }> {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   if (!token || token === 'PASTE_YOUR_NEW_AND_SECRET_TOKEN_HERE') {
     throw new Error('Server configuration error: GITHUB_TOKEN is missing.');
@@ -48,7 +48,7 @@ export interface SearchHit {
 }
 
 export async function searchInRepo(q: string, scope: Book | 'all'): Promise<SearchHit[]> {
-  const types: Book[] = scope === 'all' ? ['be','bn'] : [scope];
+  const types: Book[] = scope === 'all' ? ['be','bn','kj'] : [scope];
   const allFiles = (await Promise.all(types.map(t => listFiles(t)))).flat();
   const CONCURRENCY = 8;
   const hits: SearchHit[] = [];
@@ -56,7 +56,7 @@ export async function searchInRepo(q: string, scope: Book | 'all'): Promise<Sear
   for (let i = 0; i < allFiles.length; i += CONCURRENCY) {
     const chunk = allFiles.slice(i, i + CONCURRENCY);
     const found = await Promise.all(chunk.map(async (f) => {
-      const book: Book = f.path.startsWith('be/') ? 'be' : 'bn';
+      const book: Book = f.path.startsWith('be/') ? 'be' : (f.path.startsWith('bn/') ? 'bn' : 'kj');
       const json = await fetchJson(f.path);
       const name = f.name.replace(/\.json$/i, '');
       const title = json.judul ? cleanJudul(book, json.judul) : (json.judul_asli || name);

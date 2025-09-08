@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
 
-type Scope = 'be' | 'bn' | 'all';
+type Scope = 'be' | 'bn' | 'kj' | 'all';
 
 export async function POST(req: Request) {
   try {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     let tags: string[] | undefined;
     try {
       const body = await req.json().catch(() => undefined) as { scope?: Scope; tags?: string[] } | undefined;
-      if (body?.scope === 'be' || body?.scope === 'bn' || body?.scope === 'all') scope = body.scope;
+      if (body?.scope === 'be' || body?.scope === 'bn' || body?.scope === 'kj' || body?.scope === 'all') scope = body.scope;
       if (Array.isArray(body?.tags)) tags = body!.tags;
     } catch {}
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const targetTags = tags && tags.length > 0 ? tags : defaultTags;
 
     const scoped = (t: string) => {
-      if (scope === 'all') return [t, `${t}:be`, `${t}:bn`];
+      if (scope === 'all') return [t, `${t}:be`, `${t}:bn`, `${t}:kj`];
       return [t, `${t}:${scope}`];
     };
 

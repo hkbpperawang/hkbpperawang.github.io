@@ -1,6 +1,3 @@
-// Cache judul sisi-klien dengan deduplikasi request dan TTL di sessionStorage
-// Tujuan: mempercepat pemuatan daftar judul per buku (be/bn/kj)
-
 export type Book = 'be' | 'bn' | 'kj';
 
 type TitlesMap = Record<string, string>; // key: `${type}/${name}` -> cleaned title
@@ -61,11 +58,9 @@ export function loadTitles(book: Book): Promise<TitlesMap> {
   if (cached && Object.keys(cached).length > 0) return Promise.resolve(cached);
   // 3) fetch & persist
   const p = fetchTitles(book).then((map) => {
-    // Jangan persist peta kosong agar kita bisa retry pada kunjungan berikutnya
     if (Object.keys(map).length > 0) setToPersist(book, map);
     return map;
   }).finally(() => {
-    // Lepas promise agar tidak disajikan stale di masa depan
     delete inMemory[book];
   });
   inMemory[book] = p;

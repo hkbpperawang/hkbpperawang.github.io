@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/kj",
-        destination: "/songs/bn",
+        destination: "/songs/kj",
         permanent: false,
       },
     ];

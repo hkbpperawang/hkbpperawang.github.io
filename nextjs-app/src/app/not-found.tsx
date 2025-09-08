@@ -3,16 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-// Tetris sederhana: grid 10x20, kanvas + kontrol tombol & sentuh
+// Tetris sederhana 10x20, responsif untuk desktop/tablet/mobile
 type Cell = 0 | 1;
 type Grid = Cell[][];
 
 const COLS = 10;
 const ROWS = 20;
-const SIZE = 24; // px per sel
 
 const SHAPES = [
-  // I, J, L, O, S, T, Z
   [[1,1,1,1]],
   [[1,0,0],[1,1,1]],
   [[0,0,1],[1,1,1]],
@@ -36,25 +34,39 @@ export default function NotFoundPage() {
   const [grid, setGrid] = useState<Grid>(() => Array.from({ length: ROWS }, () => Array(COLS).fill(0)));
   const [shape, setShape] = useState<number[][]>(randomShape());
   const [pos, setPos] = useState<{x:number;y:number}>({ x: 3, y: 0 });
-  const [running, setRunning] = useState(true);
+  const [running, setRunning] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [cell, setCell] = useState<number>(36); // updated on resize
+  const [paused, setPaused] = useState(false);
+  const [lines, setLines] = useState(0);
+  const [speedMs, setSpeedMs] = useState(600);
 
-  // Gambar
+  // Responsive size: bigger than before on all devices
+  useEffect(() => {
+    const compute = () => {
+      const w = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      setCell(w < 640 ? 28 : w < 1024 ? 32 : 36);
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
+  // Draw
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    canvas.width = COLS * SIZE; canvas.height = ROWS * SIZE;
+    canvas.width = COLS * cell; canvas.height = ROWS * cell;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,canvas.width,canvas.height);
     const drawCell = (x:number,y:number,color:string) => {
-      ctx.fillStyle = color; ctx.fillRect(x*SIZE+1,y*SIZE+1,SIZE-2,SIZE-2);
+      ctx.fillStyle = color; ctx.fillRect(x*cell+1,y*cell+1,cell-2,cell-2);
     };
-    // settled
     for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) if (grid[r][c]) drawCell(c,r,'#38bdf8');
-    // current
     for (let r=0;r<shape.length;r++) for (let c=0;c<shape[0].length;c++) if (shape[r][c]) drawCell(pos.x+c,pos.y+r,'#22c55e');
-  }, [grid, shape, pos]);
+  }, [grid, shape, pos, cell]);
 
-  // Collision check
   const collides = useCallback((nx:number, ny:number, sh=shape) => {
     for (let r=0;r<sh.length;r++) for (let c=0;c<sh[0].length;c++) if (sh[r][c]) {
       const x = nx + c, y = ny + r;
@@ -64,37 +76,42 @@ export default function NotFoundPage() {
     return false;
   }, [grid, shape]);
 
-  // Merge shape ke grid, hapus baris penuh
   const lockAndClear = useCallback(() => {
     const newGrid = grid.map(row=>[...row]);
     for (let r=0;r<shape.length;r++) for (let c=0;c<shape[0].length;c++) if (shape[r][c]) {
       const x = pos.x + c, y = pos.y + r; if (y>=0) newGrid[y][x] = 1;
     }
-    // clear lines
     let cleared = 0;
     for (let r=ROWS-1;r>=0;r--) {
       if (newGrid[r].every(v=>v===1)) { newGrid.splice(r,1); newGrid.unshift(Array(COLS).fill(0)); cleared++; r++; }
     }
-    if (cleared) setScore(s=>s + (cleared===1?100:cleared===2?250:cleared===3?400:600));
+    if (cleared) {
+      setScore(s=>s + (cleared===1?100:cleared===2?250:cleared===3?400:600));
+      setLines(l=>l+cleared);
+    }
     setGrid(newGrid);
     const next = randomShape(); setShape(next); setPos({ x: 3, y: 0 });
-    if (collides(3,0,next)) setRunning(false);
+    if (collides(3,0,next)) { setRunning(false); setGameOver(true); }
   }, [grid, shape, pos, collides]);
 
-  // Gravity loop
   useEffect(() => {
-    if (!running) return;
+    if (!running || paused) return;
     const t = setInterval(() => {
       setPos(p => {
         const ny = p.y + 1;
         if (collides(p.x, ny)) { lockAndClear(); return p; }
         return { ...p, y: ny };
       });
-    }, 600);
+    }, speedMs);
     return () => clearInterval(t);
-  }, [running, grid, shape, lockAndClear, collides]);
+  }, [running, paused, speedMs, grid, shape, lockAndClear, collides]);
 
-  // Controls: keyboard
+  // Increase speed as lines cleared grow
+  useEffect(() => {
+    const next = lines >= 20 ? 320 : lines >= 12 ? 420 : lines >= 6 ? 520 : 600;
+    setSpeedMs(next);
+  }, [lines]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!running) return;
@@ -109,7 +126,7 @@ export default function NotFoundPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [running, shape, pos, collides]);
 
-  // Controls: tap/swipe sederhana
+  // Touch controls
   useEffect(() => {
     const el = canvasRef.current; if (!el) return;
     let sx=0, sy=0;
@@ -120,28 +137,57 @@ export default function NotFoundPage() {
     return () => { el.removeEventListener('touchstart', start); el.removeEventListener('touchmove', move); el.removeEventListener('touchend', end); };
   }, [collides]);
 
+  const startGame = () => {
+    setStarted(true); setGameOver(false); setPaused(false);
+    setGrid(Array.from({ length: ROWS }, () => Array(COLS).fill(0)));
+    setShape(randomShape()); setPos({x:3,y:0}); setScore(0); setLines(0); setSpeedMs(600); setRunning(true);
+  };
+
   return (
-  <main className="min-h-screen bg-gray-50 dark:bg-brand-base text-slate-900 dark:text-slate-100 flex flex-col items-center">
+    <main className="min-h-screen bg-gray-50 dark:bg-brand-base text-slate-900 dark:text-slate-100 flex flex-col items-center">
       <div className="max-w-3xl w-full px-4 pt-10 pb-6 text-center">
-        <h1 className="text-3xl font-bold">404 — Halaman tidak ditemukan</h1>
+        <h1 className="text-3xl font-bold">404 - Halaman tidak ditemukan</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">Sambil menunggu, mainkan Tetris mini di bawah ini.</p>
-        <div className="mt-6 inline-flex gap-3">
+        <div className="mt-6 inline-flex flex-wrap gap-4 justify-center">
           <Link href="/" className="px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700">Kembali ke Beranda</Link>
-          <button onClick={()=>{setGrid(Array.from({ length: ROWS }, () => Array(COLS).fill(0))); setShape(randomShape()); setPos({x:3,y:0}); setRunning(true); setScore(0);}} className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700">Mulai Ulang</button>
+          {!started ? (
+            <button onClick={startGame} className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700">Mulai</button>
+          ) : (
+            <button onClick={startGame} className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700">Mulai Ulang</button>
+          )}
         </div>
       </div>
 
       <div className="w-full flex flex-col items-center gap-4">
-  <canvas ref={canvasRef} className="rounded-md border border-slate-200 dark:border-brand-border shadow touch-none" />
+        <canvas ref={canvasRef} className="rounded-md border border-slate-200 dark:border-brand-border shadow touch-none" />
 
-        <div className="flex items-center gap-2">
-          <button aria-label="Kiri" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x-1,p.y)?{...p,x:p.x-1}:p)}>◀</button>
-          <button aria-label="Putar" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>{const rot=rotate(shape); if(!collides(pos.x,pos.y,rot)) setShape(rot);}}>⟳</button>
-          <button aria-label="Turun" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x,p.y+1)?{...p,y:p.y+1}:p)}>▼</button>
-          <button aria-label="Kanan" className="px-3 py-2 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x+1,p.y)?{...p,x:p.x+1}:p)}>▶</button>
+        <div className="flex items-center gap-4">
+          <button aria-label="Kiri" className="px-4 py-3 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x-1,p.y)?{...p,x:p.x-1}:p)}>◀</button>
+          <button aria-label="Putar" className="px-4 py-3 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>{const rot=rotate(shape); if(!collides(pos.x,pos.y,rot)) setShape(rot);}}>⟳</button>
+          <button aria-label="Turun" className="px-4 py-3 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x,p.y+1)?{...p,y:p.y+1}:p)}>▼</button>
+          <button aria-label="Kanan" className="px-4 py-3 rounded bg-slate-200 dark:bg-brand-surface hover:bg-slate-300 dark:hover:bg-brand-hover" onClick={()=>setPos(p=>!collides(p.x+1,p.y)?{...p,x:p.x+1}:p)}>▶</button>
+          <button aria-label={paused? 'Lanjut':'Jeda'} className="px-4 py-3 rounded bg-slate-800 text-white/90 hover:bg-slate-700" onClick={()=>setPaused(p=>!p)}>{paused ? 'Lanjut' : 'Jeda'}</button>
         </div>
 
-        <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">Skor: {score}</div>
+        {(!started || gameOver || paused) && (
+          <div className="mt-3 w-full max-w-[min(90vw,360px)] text-center rounded-md glass-panel-strong border border-white/15 text-white px-4 py-3">
+            {!started && !gameOver && !paused && (<div className="font-semibold">Siap bermain?</div>)}
+            {paused && !gameOver && started && (<div className="font-semibold">Jeda</div>)}
+            {gameOver && (<div>
+              <div className="text-lg font-bold">Game Over</div>
+              <div className="text-white/80 mt-1">Skor: {score}</div>
+            </div>)}
+            <div className="mt-3">
+              {!started || gameOver ? (
+                <button onClick={startGame} className="px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700">{gameOver ? 'Retry' : 'Mulai'}</button>
+              ) : (
+                <button onClick={()=>setPaused(false)} className="px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700">Lanjut</button>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">Skor: {score} • Kecepatan: {Math.round(1000/speedMs)}x • Baris: {lines}</div>
       </div>
       <div className="h-10" />
     </main>
