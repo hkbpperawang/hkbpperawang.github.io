@@ -4,6 +4,8 @@ import { InlineText } from '@/app/components/inline-text';
 import { LyricsZoom } from '@/app/components/lyrics-zoom';
 import { SongSidebar } from '@/app/components/song-sidebar';
 import type { Metadata } from 'next';
+import { fetchSongFromGithub } from '@/app/lib/song-fetch';
+import { listSongsFromGithub } from '@/app/lib/songs-list';
 import { notFound } from 'next/navigation';
 
 // == DATA FETCHING FUNCTIONS ==
@@ -28,56 +30,21 @@ interface SongData {
   bait: Bait[];
 }
 
-async function getAllSongs(): Promise<SongInfo[]> {
-  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-  const repo = 'hkbpperawang/nyanyian-source';
-  if (!token || token === 'PASTE_YOUR_NEW_AND_SECRET_TOKEN_HERE') {
-    // Jaga-jaga: fallback ke API lokal bila token kosong
-    try {
-      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-      const r = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 900 } });
-      if (!r.ok) return [];
-      const d = await r.json();
-      return d.songs as SongInfo[];
-    } catch {
-      return [];
-    }
-  }
-  async function listDir(dir: 'be'|'bn'|'kj'): Promise<SongInfo[]> {
-    const url = `https://api.github.com/repos/${repo}/contents/${dir}`;
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: 'application/vnd.github.v3+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'HKBP-Perawang-App',
-      },
-      next: { revalidate: 900 },
-    });
-    if (!res.ok) return [];
-    const items = await res.json() as { type: 'file'|'dir'; name: string; path: string }[];
-    return items.filter(i => i.type === 'file' && i.name.endsWith('.json')).map(i => ({
-      name: i.name.replace(/\.json$/i, ''),
-      path: i.path,
-      type: dir,
-    }));
-  }
-  const [be, bn, kj] = await Promise.all([listDir('be'), listDir('bn'), listDir('kj')]);
-  return [...be, ...bn, ...kj];
-}
+async function getAllSongs(): Promise<SongInfo[]> { return listSongsFromGithub(); }
 
 async function getSongContent(type: string, fileNameNoExt: string): Promise<SongData> {
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
   const name = fileNameNoExt.endsWith('.json') ? fileNameNoExt.replace(/\.json$/i, '') : fileNameNoExt;
-  const url = `${baseUrl}/api/song?type=${encodeURIComponent(type)}&name=${encodeURIComponent(name)}`;
-  const res = await fetch(url, { next: { revalidate: 900 } });
-  if (res.status === 404) notFound();
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to fetch song data via API for ${type}/${name}: ${res.status} ${res.statusText} — ${text}`);
+  try {
+    return await fetchSongFromGithub(type as 'be'|'bn'|'kj', name);
+  } catch (err) {
+    const hasStatus404 = (x: unknown): x is { status: number } =>
+      typeof x === 'object' && x !== null && 'status' in (x as Record<string, unknown>) && typeof (x as { status?: unknown }).status === 'number' && (x as { status: number }).status === 404;
+    if (hasStatus404(err)) {
+      notFound();
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to load song data for ${type}/${name}: ${message}`);
   }
-  const data = await res.json() as { data: SongData };
-  return data.data;
 }
 
 // == THE PAGE COMPONENT ==
@@ -183,8 +150,6 @@ export default async function SongPage({ params }: { params: Promise<SongParams>
   );
 }
 
-// SongSidebar dipindahkan ke komponen client terpisah
-
 // Metadata dinamis per lagu
 export async function generateMetadata(
   { params }: { params: Promise<SongParams> }
@@ -194,16 +159,7 @@ export async function generateMetadata(
   const type = (typeRaw || '').toLowerCase();
   if (!type || !name) return { title: 'Nyanyian HKBP Perawang' };
 
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-  let titleText = `${type.toUpperCase()} ${name}`;
-  try {
-    const res = await fetch(`${baseUrl}/api/titles?type=${type}`, { next: { revalidate: 900 } });
-    if (res.ok) {
-      const data = await res.json() as { titles: { name: string; type: 'be'|'bn'|'kj'; title: string }[] };
-      const found = data.titles.find(t => t.name === name);
-      if (found?.title) titleText = `${found.title} — ${type.toUpperCase()} ${name}`;
-    }
-  } catch {}
+  const titleText = `${type.toUpperCase()} ${name}`;
 
   const fullTitle = `${titleText} — Nyanyian HKBP Perawang`;
   const description = `Lagu ${type.toUpperCase()} ${name} — lirik lengkap dari Nyanyian HKBP Perawang.`;

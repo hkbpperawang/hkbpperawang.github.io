@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchJson } from '@/app/lib/fetch-json';
+import { searchInRepo } from '@/app/lib/search-utils';
 
 export const runtime = 'edge';
 
@@ -72,11 +73,9 @@ export async function GET(req: Request) {
       return NextResponse.json([outQ, suggestions.slice(0, 10), descriptions.slice(0, 10), urls.slice(0, 10)]);
     }
 
-    // 3) Teks umum → gunakan /api/search untuk saran judul
-    const res = await fetch(`${base}/api/search?q=${encodeURIComponent(q)}&type=all`, { cache: 'no-store' });
-    if (!res.ok) return NextResponse.json([q, [], [], []]);
-    const data = await res.json() as { results: { type: 'be'|'bn'; name: string; title: string }[] };
-    for (const r of data.results.slice(0, 10)) {
+  // 3) Teks umum → cari langsung di repo (hindari hop ke /api/search)
+  const results = await searchInRepo(q, 'all');
+  for (const r of results.slice(0, 10)) {
       suggestions.push(r.title);
       descriptions.push(`${r.type.toUpperCase()} ${r.name}`);
       urls.push(`/songs/${r.type}/${r.name}`);

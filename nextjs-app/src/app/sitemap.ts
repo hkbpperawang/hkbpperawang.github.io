@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { listSongsFromGithub } from '@/app/lib/songs-list';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
@@ -9,12 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const res = await fetch(`${baseUrl}/api/songs`, { next: { revalidate: 900 } });
-    if (res.ok) {
-      const data = await res.json();
-      for (const s of data.songs as { type: string; name: string }[]) {
-        urls.push({ url: `${baseUrl}/songs/${s.type}/${s.name}`, changeFrequency: 'monthly', priority: 0.8 });
-      }
+    const songs = await listSongsFromGithub();
+    for (const s of songs) {
+      urls.push({ url: `${baseUrl}/songs/${s.type}/${s.name}`, changeFrequency: 'monthly', priority: 0.8 });
     }
   } catch {}
 
